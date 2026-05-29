@@ -1,0 +1,683 @@
+Loading NIfTI: "E:/LQ/Code_Files/VS_Code/read/out/build/release/mni_t2_job1901422.nii.gz"
+NIfTI 数据范围 (RAS校正后): [ 0.0269068 ,  105.787 ]
+正在将标签对齐到主图像几何空间...
+[Phase F] Applied preset "F2" target= 167.114 235.788 124.18 entry= 167.114 235.788 204.18 activeContact= 0 amplitude= 3 V pulseWidth= 60 us frequency= 130 Hz useEncapsulation= true encapThickness_mm= 0.2 sigmaBrain=0.115S/m sigmaEncapsulation= 0.115 S/m
+[Phase F] ================= FEM run begin =================
+[Phase F] case= "F2" resultPath= "E:/LQ/Code_Files/VS_Code/read/out/phase_f_project/F2_20260529_004033_result.vtu"
+[Phase F] target= 167.114 235.788 124.18 entry= 167.114 235.788 204.18
+[Phase F] leadType= 0 amplitude= 3 V pulseWidth= 60 us contactPolarity= -1 0 0 0
+[Phase F] material sigmaBrain= 0.115 S/m useEncapsulation= true encapsulationThickness= 0.2 mm sigmaEncapsulation= 0.115 S/m
+[VTA] 启动 FEM 计算流水线...
+[DBSMeshWorker] ROI extent: 52 103 84 135 27 78
+[VTA Mesh] 0 % "开始网格化..."
+[VTA Mesh] 5 % "裁剪电极周围 ROI..."
+[DBSMeshWorker] ROI dims: 52 52 52 spacing: 1 1 1 bounds: 142 193 210 261 99 150
+[VTA Mesh] 15 % "构建合并标签图..."
+[DBSMeshWorker] labelMap 体素计数 (仅脑组织+核团，无电极):
+[DBSMeshWorker]   label 1 : 378
+[DBSMeshWorker]   label 2 : 792
+[DBSMeshWorker]   label 3 : 201
+[DBSMeshWorker]   label 4 : 371
+[DBSMeshWorker]   label 5 : 541
+[DBSMeshWorker]   label 6 : 130
+[DBSMeshWorker]   label 10 : 138195
+[Conforming] Step C-1: 提取脑组织外壳 STL...
+[VTA Mesh] 30 % "CGAL Conforming 网格化 (路线 C)..."
+[VTA Mesh] 35 % "提取脑组织外壳 STL..."
+[Conforming] 脑组织外壳: 16224 pts, 32444 tri
+[Conforming] Step C-2: 生成电极 STL...
+[VTA Mesh] 40 % "生成电极 STL..."
+[DBSElectrodeSTL] 圆头绝缘体杆体: 1514 pts, 2880 cells
+[DBSElectrodeSTL] 包膜外壳: 1514 pts, 2880 cells, thickness= 0.2 mm
+[DBSElectrodeSTL] FEM 触点半径 = 0.625 mm (leadRadius= 0.635 , strict nested)
+[DBSElectrodeSTL] 触点 0 : 650 pts, 1008 cells, center=( 167.114 , 235.788 , 125.565 )
+[DBSElectrodeSTL] 触点 1 : 650 pts, 1008 cells, center=( 167.114 , 235.788 , 127.565 )
+[DBSElectrodeSTL] 触点 2 : 650 pts, 1008 cells, center=( 167.114 , 235.788 , 129.565 )
+[DBSElectrodeSTL] 触点 3 : 650 pts, 1008 cells, center=( 167.114 , 235.788 , 131.565 )
+[DBSElectrodeSTL] 电极 STL 生成完成
+[Conforming] Step C-3: 转换为 CGAL Polyhedron...
+[VTA Mesh] 45 % "转换 CGAL Polyhedron..."
+[Conforming] brain after repair: pts= 16224  polys= 32444  is_mesh= true
+[Conforming] brain polyhedron: faces= 32444  vertices= 16224  valid= true  closed= true
+[Conforming] brain 法向朝外 (bbox center BOUNDED) OK
+[Conforming] insulator after repair: pts= 1442  polys= 2880  is_mesh= true
+[Conforming] insulator polyhedron: faces= 2880  vertices= 1442  valid= true  closed= true
+[Conforming] insulator 法向朝外 (bbox center BOUNDED) OK
+[Conforming] encapsulation after repair: pts= 1442  polys= 2880  is_mesh= true
+[Conforming] encapsulation polyhedron: faces= 2880  vertices= 1442  valid= true  closed= true
+[Conforming] encapsulation 法向朝外 (bbox center BOUNDED) OK
+[Conforming] polyBrain faces= 32444  polyEncap faces= 2880  polyInsul faces= 2880
+[Conforming] contact0 after repair: pts= 506  polys= 1008  is_mesh= true
+[Conforming] contact0 polyhedron: faces= 1008  vertices= 506  valid= true  closed= true
+[Conforming] contact0 法向朝外 (bbox center BOUNDED) OK
+[Conforming] polyContacts[ 0 ] faces= 1008
+[Conforming] contact1 after repair: pts= 506  polys= 1008  is_mesh= true
+[Conforming] contact1 polyhedron: faces= 1008  vertices= 506  valid= true  closed= true
+[Conforming] contact1 法向朝外 (bbox center BOUNDED) OK
+[Conforming] polyContacts[ 1 ] faces= 1008
+[Conforming] contact2 after repair: pts= 506  polys= 1008  is_mesh= true
+[Conforming] contact2 polyhedron: faces= 1008  vertices= 506  valid= true  closed= true
+[Conforming] contact2 法向朝外 (bbox center BOUNDED) OK
+[Conforming] polyContacts[ 2 ] faces= 1008
+[Conforming] contact3 after repair: pts= 506  polys= 1008  is_mesh= true
+[Conforming] contact3 polyhedron: faces= 1008  vertices= 506  valid= true  closed= true
+[Conforming] contact3 法向朝外 (bbox center BOUNDED) OK
+[Conforming] polyContacts[ 3 ] faces= 1008
+[Conforming] domain polyhedra count = 7
+[Conforming] encapsulation enabled = true label= 51 thickness= 0.2 mm
+[VTA Mesh] 50 % "构造 polyhedral complex domain..."
+[Conforming] detect_features(60) + detect_borders...
+[Conforming] electrode cell sizing field: nearSize= 0.3 nearR= 1.5 farSize= 1.5 farR= 5
+[Conforming] electrode facet sizing field: nearSize= 0.18 nearR= 1.5 farSize= 1 farR= 5
+[Conforming] make_mesh_3 ...
+[VTA Mesh] 55 % "CGAL make_mesh_3 (耗时较长)..."
+[Conforming] mesh built! vertices= 49875  tets= 277347  facets= 30050  用时: 9088 ms
+[VTA Mesh] 80 % "构造网格 .mesh 文件..."
+[Conforming] tet label 计数:
+[Conforming]   sub 10 : 265430
+[Conforming]   sub 50 : 2416
+[Conforming]   sub 51 : 7490
+[Conforming]   sub 101 : 499
+[Conforming]   sub 102 : 519
+[Conforming]   sub 103 : 494
+[Conforming]   sub 104 : 499
+[Conforming] 给表面三角形打标签 (按 facet 两侧 subdomain)...
+[Conforming] surface patch index 计数:
+[Conforming]   patch 1 : 24408
+[Conforming]   patch 2 : 3195
+[Conforming]   patch 3 : 121
+[Conforming]   patch 4 : 1228
+[Conforming]   patch 5 : 73
+[Conforming]   patch 6 : 203
+[Conforming]   patch 7 : 35
+[Conforming]   patch 8 : 35
+[Conforming]   patch 9 : 178
+[Conforming]   patch 10 : 35
+[Conforming]   patch 11 : 35
+[Conforming]   patch 12 : 175
+[Conforming]   patch 13 : 35
+[Conforming]   patch 14 : 35
+[Conforming]   patch 15 : 193
+[Conforming]   patch 16 : 35
+[Conforming]   patch 17 : 31
+[Conforming] triangle label 计数 (-1 = ROI/脑壳):
+[Conforming]   label -1 : 24408
+[Conforming]   label 50 : 1226
+[Conforming]   label 51 : 3316
+[Conforming]   label 101 : 276
+[Conforming]   label 102 : 276
+[Conforming]   label 103 : 274
+[Conforming]   label 104 : 274
+[Conforming] 总耗时: 10199 ms
+[VTA Mesh] 95 % "网格文件写入完成"
+[VTA Mesh] 100 % "网格化完成"
+[VTA] 网格化完成: "C:/Users/123/AppData/Local/Temp/dbs_fem_mesh.mesh"
+[VTA-Debug] 即将创建 DBSSimWorker...
+[VTA-Debug] simWorker 已创建, 设置 spec...
+[VTA-Debug] spec/mesh path 已设置, 创建线程...
+[VTA-Debug] simWorker 已 moveToThread, 连接信号...
+[VTA-Debug] 信号连接完毕, 即将启动 simThread...
+[VTA-Debug] simThread->start() 已调用
+[VTA FEM] 0 % "开始 FEM 求解..."
+[VTA FEM] 5 % "读取 .mesh 文件..."
+[FEM] 网格:  49875 节点, 277347 四面体, 30050 三角形
+[FEM] triangle label 计数:
+[FEM]   tri label -1 : 24408
+[FEM]   tri label 50 : 1226
+[FEM]   tri label 51 : 3316
+[FEM]   tri label 101 : 276
+[FEM]   tri label 102 : 276
+[FEM]   tri label 103 : 274
+[FEM]   tri label 104 : 274
+[FEM] tetra label 计数:
+[FEM]   tet label 10 : 265430
+[FEM]   tet label 50 : 2416
+[FEM]   tet label 51 : 7490
+[FEM]   tet label 101 : 499
+[FEM]   tet label 102 : 519
+[FEM]   tet label 103 : 494
+[FEM]   tet label 104 : 499
+[VTA FEM] 20 % "组装刚度矩阵并求解..."
+[FEM] 电极表面节点总数: 1102
+[FEM]   electrode surface tri label 50 : 1226
+[FEM]   electrode surface tri label 101 : 276
+[FEM]   electrode surface tri label 102 : 276
+[FEM]   electrode surface tri label 103 : 274
+[FEM]   electrode surface tri label 104 : 274
+[FEM] Contact 0 polarity= -1 voltage= -3 surfaceNodes= 140 allSurfaceNodes= 140 volumeNodes= 163
+[FEM] Contact 1 polarity= 0 voltage= 0 surfaceNodes= 140 allSurfaceNodes= 140 volumeNodes= 165
+[FEM] Contact 2 polarity= 0 voltage= 0 surfaceNodes= 139 allSurfaceNodes= 139 volumeNodes= 161
+[FEM] Contact 3 polarity= 0 voltage= 0 surfaceNodes= 139 allSurfaceNodes= 139 volumeNodes= 163
+[FEM] amplitude= 3 interpreted_as_voltage_V= true useFloatingContacts= true useEncapsulationLayer= true
+[FEM] conductivity sigma_brain= 0.115 S/m sigma_encap= 0.115 S/m encapThickness= 0.2 mm
+[FEM] flux residual unit path: coords=mm, grad=1/mm, vol=mm^3, K=sigma*vol*1e-3 => A/V, residual=K*phi A, report=mA
+[FEM] outer boundary grounding skipped electrode-surface node hits: 0
+[FEM] Contact 1 floating nodes: 120 master= 74 polarity= 0
+[FEM] Contact 2 floating nodes: 119 master= 108 polarity= 0
+[FEM] Contact 3 floating nodes: 121 master= 142 polarity= 0
+[FEM] 电极表面节点未被脑组织tet共享: 78 / 1102
+[FEM]   surfaceNoBrain by label 50 : 0 / 692
+[FEM]   surfaceNoBrain by label 101 : 20 / 140
+[FEM]   surfaceNoBrain by label 102 : 20 / 140
+[FEM]   surfaceNoBrain by label 103 : 20 / 139
+[FEM]   surfaceNoBrain by label 104 : 18 / 139
+[FEM] Contact 0 surface brain-share: all= 140 shared= 120 noBrain= 20 brainFacingRatio= "0.857" | dirichletBC= 140 shared= 120 noBrain= 20
+[FEM] Contact 1 surface brain-share: all= 140 shared= 120 noBrain= 20 brainFacingRatio= "0.857" | dirichletBC= 140 shared= 120 noBrain= 20
+[FEM] Contact 2 surface brain-share: all= 139 shared= 119 noBrain= 20 brainFacingRatio= "0.856" | dirichletBC= 139 shared= 119 noBrain= 20
+[FEM] Contact 3 surface brain-share: all= 139 shared= 121 noBrain= 18 brainFacingRatio= "0.871" | dirichletBC= 139 shared= 121 noBrain= 18
+[FEM] 挖空电极: 内部孤立节点强制 Dirichlet = 239
+[FEM] 挖空电极: 其中电极表面节点 = 58
+[FEM] Dirichlet 节点: 12585 / 49875 "(25.2%)"
+[FEM]   其中 触点: 140 , 外边界: 12206
+[FEM] 自由节点: 36933
+[VTA FEM] 30 % "组装刚度矩阵 (277347 四面体)..."
+[FEM] Contact 0 effective contact Dirichlet BC nodes: 120 / 140 (brain-shared= 120 , noBrain= 20 , effectiveRatio= "1.000" )
+[FEM] Contact 1 effective contact Dirichlet BC nodes: 0 / 140 (brain-shared= 120 , noBrain= 20 , effectiveRatio= "0.000" )
+[FEM] Contact 2 effective contact Dirichlet BC nodes: 0 / 139 (brain-shared= 119 , noBrain= 20 , effectiveRatio= "0.000" )
+[FEM] Contact 3 effective contact Dirichlet BC nodes: 0 / 139 (brain-shared= 121 , noBrain= 18 , effectiveRatio= "0.000" )
+[VTA FEM] 60 % "求解线性方程组 (SuperLU)..."
+[FEM] 刚度矩阵:  36933 x 36933 , 非零: 556021
+[VTA FEM] 80 % "计算电场..."
+[FEM] Contact 1 floating phi: nodes= 120 master= 74 min= -1.06234 max= -1.06234 span= 0
+[FEM] Contact 2 floating phi: nodes= 119 master= 108 min= -0.551161 max= -0.551161 span= 0
+[FEM] Contact 3 floating phi: nodes= 121 master= 142 min= -0.350023 max= -0.350023 span= 0
+[FEM] Contact 0 flux residual estimate: "-3.4979016" mA brainSharedFluxNodes= 120 noBrainSkippedNodes= 20 contribTets= 1128 polarity= -1
+[FEM] Contact 1 flux residual estimate: "1.1629369e-14" mA brainSharedFluxNodes= 120 noBrainSkippedNodes= 20 contribTets= 1100 polarity= 0
+[FEM] Contact 2 flux residual estimate: "-8.9063143e-15" mA brainSharedFluxNodes= 119 noBrainSkippedNodes= 20 contribTets= 1099 polarity= 0
+[FEM] Contact 3 flux residual estimate: "-3.14771e-16" mA brainSharedFluxNodes= 121 noBrainSkippedNodes= 18 contribTets= 1102 polarity= 0
+[FEM] 电场范围: 0 ~ 10.9851 V/mm
+[FEM] 电场分布: p50= 0.00472614  p95= 0.208222  p99= 1.29333  p99.5= 2.1023  p99.9= 4.00147  robustMax(p1体积过滤)= 5.16719 V/mm
+[FEM] tet体积 p1 = 0.00128885 mm^3, E>=threshold( 0.2 ) cells= 14186  volume= 165.24 mm^3
+[FEM] 高场体积 E>= 1 V/mm: cells= 3730 volume= 12.7647 mm^3
+[FEM] 高场体积 E>= 5 V/mm: cells= 17 volume= 0.0164582 mm^3
+[FEM] 高场体积 E>= 10 V/mm: cells= 1 volume= 0.000278464 mm^3
+[FEM] 高场体积 E>= 20 V/mm: cells= 0 volume= 0 mm^3
+[FEM] maxE cell: 56517 label= 51 vol= 0.000278464
+[FEM] maxE phi: -1.56522 -1.99079 -3 -1.98746
+[FEM] topE 0 cell= 56517 E= 10.9851 label= 51 vol= 0.000278464 center= 167.767 236.114 126.486 distToActiveContact= 1.17512
+[FEM] topE 1 cell= 43372 E= 8.68459 label= 51 vol= 0.000353811 center= 167.044 235.063 126.468 distToActiveContact= 1.15961
+[FEM] topE 2 cell= 54255 E= 7.33845 label= 51 vol= 0.000488691 center= 167.637 236.228 124.601 distToActiveContact= 1.18191
+[FEM] topE 3 cell= 17404 E= 6.62486 label= 51 vol= 0.000658431 center= 166.47 236.131 126.491 distToActiveContact= 1.17898
+[FEM] topE 4 cell= 45251 E= 6.60333 label= 51 vol= 0.000697461 center= 166.412 235.588 126.473 distToActiveContact= 1.16452
+[FEM] ===== 验证摘要 =====
+[FEM] Dirichlet 比例: "25.2%" | 电场 max: 10.9851 V/mm | robustMax: 5.16719 V/mm | 重点看 surfaceNodes / p99.9 / maxE top cells
+[VTA FEM] 90 % "构建 VTK 结果..."
+[FEM] VTK 结果:  49875 pts, 277347 cells
+[VTA FEM] 100 % "FEM 求解完成"
+[VTA] FEM 求解完成，提取等值面...
+[Phase F] FEM VTU saved: "F2" "E:/LQ/Code_Files/VS_Code/read/out/phase_f_project/F2_20260529_004033_result.vtu"
+[VTA] contour active point scalar = E_mag_Vmm
+[VTA] 脉宽= 60 μs, 阈值= 0.2 V/mm
+[VTA] 等值面:  3245 pts, 6486 cells
+[VTA SUMMARY] ================= 本次 FEM-VTA 汇报摘要 =================
+[VTA SUMMARY] 数据: T2 MNI image + nuclei labels(1-6), spacing~1mm
+[VTA SUMMARY] 网格: nodes= 49875  tets= 277347  tris= 30050  | 合理: nodes>5000, tets>20000
+[VTA SUMMARY] 刺激: UI amplitude= 3  按电压控制解释为 -3 V  pulseWidth= 60 us
+[VTA SUMMARY] 触点: selected= 0  surfaceNodes= 140  volumeNodes= 163  | 目标: brain-facing effective ratio>=0.95
+[VTA SUMMARY] selected contact BC有效性: allSurface= 140  allShared= 120  allNoBrain= 20  activeShared= 120  activeNoBrain= 20  effective= 120  brainFacingRatio= 0.857143  effectiveRatio= 1  | 判定: "BC耦合已充分"  [OK]
+[VTA SUMMARY] contact flux: C0= -3.4979 mA C1= 1.16294e-14 mA C2= -8.90631e-15 mA C3= -3.14771e-16 mA  | floating目标: inactive≈0
+[VTA SUMMARY] 电极表面共享: surfaceNoBrain= 78  hollowedSurface= 58  | 目标: hollowedSurface=0
+[VTA SUMMARY] Dirichlet: total= 12585 "(25.2%)"  contact= 140  outer= 12206  | 小 ROI 下外边界占比偏高是正常现象
+[VTA SUMMARY] E-field: p50= 0.00472614  p95= 0.208222  p99= 1.29333  p99.5= 2.1023  p99.9= 4.00147  max= 10.9851 V/mm  robustMax= 5.16719  | 重点看 p99.9/robustMax 而非全局 p99/raw max  [OK]
+[VTA SUMMARY] maxE cell: label= 51  vol= 0.000278464 mm^3  tinyVolP1= 0.00128885  | 合理: raw max 不应只由极小体积单元主导
+[VTA SUMMARY] thresholded brain: cells= 14186  volume= 165.24 mm^3
+[VTA SUMMARY] VTA: threshold= 0.2 V/mm  pts= 3245  cells= 6486  bounds= 163.506 170.75 232.235 239.42 122.19 130.798  halfExtents= 3.6221 3.59254 4.30383  diagHalf= 6.6745  volume= 180.028  eqSphereR= 3.50282  | 文献目标(3V/60us/3389): 半径约2-3mm, 直径4-6mm  [OK]
+[VTA SUMMARY] 结论: solver= OK , VTA extract= OK , contact meshing= OK
+[VTA SUMMARY] ========================================================
+[VTA Display] real VTA bounds: 163.506 170.75 232.235 239.42 122.19 130.798
+[VTA Display] real VTA center: 167.128 235.827 126.494 extent (mm): 7.2442 7.18509 8.60765 approx radius: 6.6745
+[VTA Display] 3D actor scene bounds: -3.53635 3.58906 -1.9142 6.63006 -3.5906 3.48229
+
+
+Loading NIfTI: "E:/LQ/Code_Files/VS_Code/read/out/build/release/mni_t2_job1901422.nii.gz"
+NIfTI 数据范围 (RAS校正后): [ 0.0269068 ,  105.787 ]
+正在将标签对齐到主图像几何空间...
+[Phase F] Applied preset "F3" target= 167.114 235.788 124.18 entry= 167.114 235.788 204.18 activeContact= 2 amplitude= 3 V pulseWidth= 60 us frequency= 130 Hz useEncapsulation= false encapThickness_mm= 0 sigmaBrain=0.115S/m sigmaEncapsulation= 0.115 S/m
+[Phase F] ================= FEM run begin =================
+[Phase F] case= "F3" resultPath= "E:/LQ/Code_Files/VS_Code/read/out/phase_f_project/F3_20260529_004650_result.vtu"
+[Phase F] target= 167.114 235.788 124.18 entry= 167.114 235.788 204.18
+[Phase F] leadType= 0 amplitude= 3 V pulseWidth= 60 us contactPolarity= 0 0 -1 0
+[Phase F] material sigmaBrain= 0.115 S/m useEncapsulation= false encapsulationThickness= 0 mm sigmaEncapsulation= 0.115 S/m
+[VTA] 启动 FEM 计算流水线...
+[DBSMeshWorker] ROI extent: 52 103 84 135 27 78
+[VTA Mesh] 0 % "开始网格化..."
+[VTA Mesh] 5 % "裁剪电极周围 ROI..."
+[DBSMeshWorker] ROI dims: 52 52 52 spacing: 1 1 1 bounds: 142 193 210 261 99 150
+[VTA Mesh] 15 % "构建合并标签图..."
+[DBSMeshWorker] labelMap 体素计数 (仅脑组织+核团，无电极):
+[DBSMeshWorker]   label 1 : 378
+[DBSMeshWorker]   label 2 : 792
+[DBSMeshWorker]   label 3 : 201
+[DBSMeshWorker]   label 4 : 371
+[DBSMeshWorker]   label 5 : 541
+[DBSMeshWorker]   label 6 : 130
+[DBSMeshWorker]   label 10 : 138195
+[Conforming] Step C-1: 提取脑组织外壳 STL...
+[VTA Mesh] 30 % "CGAL Conforming 网格化 (路线 C)..."
+[VTA Mesh] 35 % "提取脑组织外壳 STL..."
+[Conforming] 脑组织外壳: 16224 pts, 32444 tri
+[Conforming] Step C-2: 生成电极 STL...
+[VTA Mesh] 40 % "生成电极 STL..."
+[DBSElectrodeSTL] 圆头绝缘体杆体: 1514 pts, 2880 cells
+[DBSElectrodeSTL] FEM 触点半径 = 0.625 mm (leadRadius= 0.635 , strict nested)
+[DBSElectrodeSTL] 触点 0 : 650 pts, 1008 cells, center=( 167.114 , 235.788 , 125.565 )
+[DBSElectrodeSTL] 触点 1 : 650 pts, 1008 cells, center=( 167.114 , 235.788 , 127.565 )
+[DBSElectrodeSTL] 触点 2 : 650 pts, 1008 cells, center=( 167.114 , 235.788 , 129.565 )
+[DBSElectrodeSTL] 触点 3 : 650 pts, 1008 cells, center=( 167.114 , 235.788 , 131.565 )
+[DBSElectrodeSTL] 电极 STL 生成完成
+[Conforming] Step C-3: 转换为 CGAL Polyhedron...
+[VTA Mesh] 45 % "转换 CGAL Polyhedron..."
+[Conforming] brain after repair: pts= 16224  polys= 32444  is_mesh= true
+[Conforming] brain polyhedron: faces= 32444  vertices= 16224  valid= true  closed= true
+[Conforming] brain 法向朝外 (bbox center BOUNDED) OK
+[Conforming] insulator after repair: pts= 1442  polys= 2880  is_mesh= true
+[Conforming] insulator polyhedron: faces= 2880  vertices= 1442  valid= true  closed= true
+[Conforming] insulator 法向朝外 (bbox center BOUNDED) OK
+[Conforming] polyBrain faces= 32444  polyEncap faces= 0  polyInsul faces= 2880
+[Conforming] contact0 after repair: pts= 506  polys= 1008  is_mesh= true
+[Conforming] contact0 polyhedron: faces= 1008  vertices= 506  valid= true  closed= true
+[Conforming] contact0 法向朝外 (bbox center BOUNDED) OK
+[Conforming] polyContacts[ 0 ] faces= 1008
+[Conforming] contact1 after repair: pts= 506  polys= 1008  is_mesh= true
+[Conforming] contact1 polyhedron: faces= 1008  vertices= 506  valid= true  closed= true
+[Conforming] contact1 法向朝外 (bbox center BOUNDED) OK
+[Conforming] polyContacts[ 1 ] faces= 1008
+[Conforming] contact2 after repair: pts= 506  polys= 1008  is_mesh= true
+[Conforming] contact2 polyhedron: faces= 1008  vertices= 506  valid= true  closed= true
+[Conforming] contact2 法向朝外 (bbox center BOUNDED) OK
+[Conforming] polyContacts[ 2 ] faces= 1008
+[Conforming] contact3 after repair: pts= 506  polys= 1008  is_mesh= true
+[Conforming] contact3 polyhedron: faces= 1008  vertices= 506  valid= true  closed= true
+[Conforming] contact3 法向朝外 (bbox center BOUNDED) OK
+[Conforming] polyContacts[ 3 ] faces= 1008
+[Conforming] domain polyhedra count = 6
+[Conforming] encapsulation enabled = false label= 51 thickness= 0 mm
+[VTA Mesh] 50 % "构造 polyhedral complex domain..."
+[Conforming] detect_features(60) + detect_borders...
+[Conforming] electrode cell sizing field: nearSize= 0.3 nearR= 1.5 farSize= 1.5 farR= 5
+[Conforming] electrode facet sizing field: nearSize= 0.18 nearR= 1.5 farSize= 1 farR= 5
+[Conforming] make_mesh_3 ...
+[VTA Mesh] 55 % "CGAL make_mesh_3 (耗时较长)..."
+[Conforming] mesh built! vertices= 48874  tets= 270930  facets= 26684  用时: 6806 ms
+[VTA Mesh] 80 % "构造网格 .mesh 文件..."
+[Conforming] tet label 计数:
+[Conforming]   sub 10 : 266642
+[Conforming]   sub 50 : 2328
+[Conforming]   sub 101 : 497
+[Conforming]   sub 102 : 492
+[Conforming]   sub 103 : 493
+[Conforming]   sub 104 : 478
+[Conforming] 给表面三角形打标签 (按 facet 两侧 subdomain)...
+[Conforming] surface patch index 计数:
+[Conforming]   patch 1 : 24460
+[Conforming]   patch 2 : 1191
+[Conforming]   patch 3 : 37
+[Conforming]   patch 4 : 194
+[Conforming]   patch 5 : 35
+[Conforming]   patch 6 : 35
+[Conforming]   patch 7 : 165
+[Conforming]   patch 8 : 35
+[Conforming]   patch 9 : 35
+[Conforming]   patch 10 : 176
+[Conforming]   patch 11 : 35
+[Conforming]   patch 12 : 35
+[Conforming]   patch 13 : 183
+[Conforming]   patch 14 : 35
+[Conforming]   patch 15 : 33
+[Conforming] triangle label 计数 (-1 = ROI/脑壳):
+[Conforming]   label -1 : 24460
+[Conforming]   label 50 : 1154
+[Conforming]   label 101 : 266
+[Conforming]   label 102 : 268
+[Conforming]   label 103 : 270
+[Conforming]   label 104 : 266
+[Conforming] 总耗时: 7719 ms
+[VTA Mesh] 95 % "网格文件写入完成"
+[VTA Mesh] 100 % "网格化完成"
+[VTA] 网格化完成: "C:/Users/123/AppData/Local/Temp/dbs_fem_mesh.mesh"
+[VTA-Debug] 即将创建 DBSSimWorker...
+[VTA-Debug] simWorker 已创建, 设置 spec...
+[VTA-Debug] spec/mesh path 已设置, 创建线程...
+[VTA-Debug] simWorker 已 moveToThread, 连接信号...
+[VTA-Debug] 信号连接完毕, 即将启动 simThread...
+[VTA-Debug] simThread->start() 已调用
+[VTA FEM] 0 % "开始 FEM 求解..."
+[VTA FEM] 5 % "读取 .mesh 文件..."
+[FEM] 网格:  48874 节点, 270930 四面体, 26684 三角形
+[FEM] triangle label 计数:
+[FEM]   tri label -1 : 24460
+[FEM]   tri label 50 : 1154
+[FEM]   tri label 101 : 266
+[FEM]   tri label 102 : 268
+[FEM]   tri label 103 : 270
+[FEM]   tri label 104 : 266
+[FEM] tetra label 计数:
+[FEM]   tet label 10 : 266642
+[FEM]   tet label 50 : 2328
+[FEM]   tet label 101 : 497
+[FEM]   tet label 102 : 492
+[FEM]   tet label 103 : 493
+[FEM]   tet label 104 : 478
+[VTA FEM] 20 % "组装刚度矩阵并求解..."
+[FEM] 电极表面节点总数: 1054
+[FEM]   electrode surface tri label 50 : 1154
+[FEM]   electrode surface tri label 101 : 266
+[FEM]   electrode surface tri label 102 : 268
+[FEM]   electrode surface tri label 103 : 270
+[FEM]   electrode surface tri label 104 : 266
+[FEM] Contact 0 polarity= 0 voltage= 0 surfaceNodes= 135 allSurfaceNodes= 135 volumeNodes= 159
+[FEM] Contact 1 polarity= 0 voltage= 0 surfaceNodes= 136 allSurfaceNodes= 136 volumeNodes= 160
+[FEM] Contact 2 polarity= -1 voltage= -3 surfaceNodes= 137 allSurfaceNodes= 137 volumeNodes= 161
+[FEM] Contact 3 polarity= 0 voltage= 0 surfaceNodes= 135 allSurfaceNodes= 135 volumeNodes= 156
+[FEM] amplitude= 3 interpreted_as_voltage_V= true useFloatingContacts= true useEncapsulationLayer= false
+[FEM] conductivity sigma_brain= 0.115 S/m sigma_encap= 0.115 S/m encapThickness= 0 mm
+[FEM] flux residual unit path: coords=mm, grad=1/mm, vol=mm^3, K=sigma*vol*1e-3 => A/V, residual=K*phi A, report=mA
+[FEM] outer boundary grounding skipped electrode-surface node hits: 0
+[FEM] Contact 0 floating nodes: 115 master= 17 polarity= 0
+[FEM] Contact 1 floating nodes: 116 master= 51 polarity= 0
+[FEM] Contact 3 floating nodes: 116 master= 119 polarity= 0
+[FEM] 电极表面节点未被脑组织tet共享: 79 / 1054
+[FEM]   surfaceNoBrain by label 50 : 0 / 647
+[FEM]   surfaceNoBrain by label 101 : 20 / 135
+[FEM]   surfaceNoBrain by label 102 : 20 / 136
+[FEM]   surfaceNoBrain by label 103 : 20 / 137
+[FEM]   surfaceNoBrain by label 104 : 19 / 135
+[FEM] Contact 0 surface brain-share: all= 135 shared= 115 noBrain= 20 brainFacingRatio= "0.852" | dirichletBC= 135 shared= 115 noBrain= 20
+[FEM] Contact 1 surface brain-share: all= 136 shared= 116 noBrain= 20 brainFacingRatio= "0.853" | dirichletBC= 136 shared= 116 noBrain= 20
+[FEM] Contact 2 surface brain-share: all= 137 shared= 117 noBrain= 20 brainFacingRatio= "0.854" | dirichletBC= 137 shared= 117 noBrain= 20
+[FEM] Contact 3 surface brain-share: all= 135 shared= 116 noBrain= 19 brainFacingRatio= "0.859" | dirichletBC= 135 shared= 116 noBrain= 19
+[FEM] 挖空电极: 内部孤立节点强制 Dirichlet = 235
+[FEM] 挖空电极: 其中电极表面节点 = 59
+[FEM] Dirichlet 节点: 12604 / 48874 "(25.8%)"
+[FEM]   其中 触点: 137 , 外边界: 12232
+[FEM] 自由节点: 35926
+[VTA FEM] 30 % "组装刚度矩阵 (270930 四面体)..."
+[FEM] Contact 0 effective contact Dirichlet BC nodes: 0 / 135 (brain-shared= 115 , noBrain= 20 , effectiveRatio= "0.000" )
+[FEM] Contact 1 effective contact Dirichlet BC nodes: 0 / 136 (brain-shared= 116 , noBrain= 20 , effectiveRatio= "0.000" )
+[FEM] Contact 2 effective contact Dirichlet BC nodes: 117 / 137 (brain-shared= 117 , noBrain= 20 , effectiveRatio= "1.000" )
+[FEM] Contact 3 effective contact Dirichlet BC nodes: 0 / 135 (brain-shared= 116 , noBrain= 19 , effectiveRatio= "0.000" )
+[VTA FEM] 60 % "求解线性方程组 (SuperLU)..."
+[FEM] 刚度矩阵:  35926 x 35926 , 非零: 541316
+[VTA FEM] 80 % "计算电场..."
+[FEM] Contact 0 floating phi: nodes= 115 master= 17 min= -0.58342 max= -0.58342 span= 0
+[FEM] Contact 1 floating phi: nodes= 116 master= 51 min= -1.10427 max= -1.10427 span= 0
+[FEM] Contact 3 floating phi: nodes= 116 master= 119 min= -1.11979 max= -1.11979 span= 0
+[FEM] Contact 0 flux residual estimate: "-4.9658763e-15" mA brainSharedFluxNodes= 115 noBrainSkippedNodes= 20 contribTets= 798 polarity= 0
+[FEM] Contact 1 flux residual estimate: "1.4853299e-14" mA brainSharedFluxNodes= 116 noBrainSkippedNodes= 20 contribTets= 817 polarity= 0
+[FEM] Contact 2 flux residual estimate: "-3.6287255" mA brainSharedFluxNodes= 117 noBrainSkippedNodes= 20 contribTets= 833 polarity= -1
+[FEM] Contact 3 flux residual estimate: "1.7884999e-15" mA brainSharedFluxNodes= 116 noBrainSkippedNodes= 19 contribTets= 769 polarity= 0
+[FEM] 电场范围: 0 ~ 7.13935 V/mm
+[FEM] 电场分布: p50= 0.00454777  p95= 0.167251  p99= 0.970453  p99.5= 1.66009  p99.9= 3.28171  robustMax(p1体积过滤)= 5.41962 V/mm
+[FEM] tet体积 p1 = 0.00273032 mm^3, E>=threshold( 0.2 ) cells= 12266  volume= 168.085 mm^3
+[FEM] 高场体积 E>= 1 V/mm: cells= 2624 volume= 12.4791 mm^3
+[FEM] 高场体积 E>= 5 V/mm: cells= 8 volume= 0.0165213 mm^3
+[FEM] 高场体积 E>= 10 V/mm: cells= 0 volume= 0 mm^3
+[FEM] 高场体积 E>= 20 V/mm: cells= 0 volume= 0 mm^3
+[FEM] maxE cell: 249510 label= 10 vol= 0.000398314
+[FEM] maxE phi: -1.69881 -1.96513 -2.02239 -2.38203
+[FEM] topE 0 cell= 249510 E= 7.13935 label= 10 vol= 0.000398314 center= 168.074 235.423 129.088 distToActiveContact= 1.13244
+[FEM] topE 1 cell= 189060 E= 5.71662 label= 10 vol= 4.70342e-05 center= 166.865 236.777 130.129 distToActiveContact= 1.16553
+[FEM] topE 2 cell= 80386 E= 5.68152 label= 10 vol= 0.00190921 center= 166.385 235.99 130.487 distToActiveContact= 1.193
+[FEM] topE 3 cell= 242800 E= 5.41962 label= 10 vol= 0.0030594 center= 166.981 235.098 128.758 distToActiveContact= 1.07022
+[FEM] topE 4 cell= 154958 E= 5.21439 label= 10 vol= 0.000250999 center= 166.519 236.688 130.373 distToActiveContact= 1.34784
+[FEM] ===== 验证摘要 =====
+[FEM] Dirichlet 比例: "25.8%" | 电场 max: 7.13935 V/mm | robustMax: 5.41962 V/mm | 重点看 surfaceNodes / p99.9 / maxE top cells
+[VTA FEM] 90 % "构建 VTK 结果..."
+[FEM] VTK 结果:  48874 pts, 270930 cells
+[VTA FEM] 100 % "FEM 求解完成"
+[VTA] FEM 求解完成，提取等值面...
+[Phase F] FEM VTU saved: "F3" "E:/LQ/Code_Files/VS_Code/read/out/phase_f_project/F3_20260529_004650_result.vtu"
+[VTA] contour active point scalar = E_mag_Vmm
+[VTA] 脉宽= 60 μs, 阈值= 0.2 V/mm
+[VTA] 等值面:  3404 pts, 6784 cells
+[VTA SUMMARY] ================= 本次 FEM-VTA 汇报摘要 =================
+[VTA SUMMARY] 数据: T2 MNI image + nuclei labels(1-6), spacing~1mm
+[VTA SUMMARY] 网格: nodes= 48874  tets= 270930  tris= 26684  | 合理: nodes>5000, tets>20000
+[VTA SUMMARY] 刺激: UI amplitude= 3  按电压控制解释为 -3 V  pulseWidth= 60 us
+[VTA SUMMARY] 触点: selected= 2  surfaceNodes= 137  volumeNodes= 161  | 目标: brain-facing effective ratio>=0.95
+[VTA SUMMARY] selected contact BC有效性: allSurface= 137  allShared= 117  allNoBrain= 20  activeShared= 117  activeNoBrain= 20  effective= 117  brainFacingRatio= 0.854015  effectiveRatio= 1  | 判定: "BC耦合已充分"  [OK]
+[VTA SUMMARY] contact flux: C0= -4.96588e-15 mA C1= 1.48533e-14 mA C2= -3.62873 mA C3= 1.7885e-15 mA  | floating目标: inactive≈0
+[VTA SUMMARY] 电极表面共享: surfaceNoBrain= 79  hollowedSurface= 59  | 目标: hollowedSurface=0
+[VTA SUMMARY] Dirichlet: total= 12604 "(25.8%)"  contact= 137  outer= 12232  | 小 ROI 下外边界占比偏高是正常现象
+[VTA SUMMARY] E-field: p50= 0.00454777  p95= 0.167251  p99= 0.970453  p99.5= 1.66009  p99.9= 3.28171  max= 7.13935 V/mm  robustMax= 5.41962  | 重点看 p99.9/robustMax 而非全局 p99/raw max  [OK]
+[VTA SUMMARY] maxE cell: label= 10  vol= 0.000398314 mm^3  tinyVolP1= 0.00273032  | 合理: raw max 不应只由极小体积单元主导
+[VTA SUMMARY] thresholded brain: cells= 12266  volume= 168.085 mm^3
+[VTA SUMMARY] VTA: threshold= 0.2 V/mm  pts= 3404  cells= 6784  bounds= 163.35 170.747 232.179 239.433 124.341 133.484  halfExtents= 3.69843 3.62694 4.57155  diagHalf= 6.90884  volume= 183.365  eqSphereR= 3.52433  | 文献目标(3V/60us/3389): 半径约2-3mm, 直径4-6mm  [OK]
+[VTA SUMMARY] 结论: solver= OK , VTA extract= OK , contact meshing= OK
+[VTA SUMMARY] ========================================================
+[VTA Display] real VTA bounds: 163.35 170.747 232.179 239.433 124.341 133.484
+[VTA Display] real VTA center: 167.048 235.806 128.912 extent (mm): 7.39685 7.25388 9.1431 approx radius: 6.90884
+[VTA Display] 3D actor scene bounds: -3.60875 3.56227 0.310868 9.24024 -3.66477 3.5384
+[Phase F] ================= FEM run end: success =================
+
+
+Loading NIfTI: "E:/LQ/Code_Files/VS_Code/read/out/build/release/mni_t2_job1901422.nii.gz"
+NIfTI 数据范围 (RAS校正后): [ 0.0269068 ,  105.787 ]
+正在将标签对齐到主图像几何空间...
+[Phase F] Applied preset "F4" target= 167.114 235.788 124.18 entry= 167.114 235.788 204.18 activeContact= 2 amplitude= 3 V pulseWidth= 60 us frequency= 130 Hz useEncapsulation= true encapThickness_mm= 0.2 sigmaBrain=0.115S/m sigmaEncapsulation= 0.07 S/m
+[Phase F] ================= FEM run begin =================
+[Phase F] case= "F4" resultPath= "E:/LQ/Code_Files/VS_Code/read/out/phase_f_project/F4_20260529_004931_result.vtu"
+[Phase F] target= 167.114 235.788 124.18 entry= 167.114 235.788 204.18
+[Phase F] leadType= 0 amplitude= 3 V pulseWidth= 60 us contactPolarity= 0 0 -1 0
+[Phase F] material sigmaBrain= 0.115 S/m useEncapsulation= true encapsulationThickness= 0.2 mm sigmaEncapsulation= 0.07 S/m
+[VTA] 启动 FEM 计算流水线...
+[DBSMeshWorker] ROI extent: 52 103 84 135 27 78
+[VTA Mesh] 0 % "开始网格化..."
+[VTA Mesh] 5 % "裁剪电极周围 ROI..."
+[DBSMeshWorker] ROI dims: 52 52 52 spacing: 1 1 1 bounds: 142 193 210 261 99 150
+[VTA Mesh] 15 % "构建合并标签图..."
+[DBSMeshWorker] labelMap 体素计数 (仅脑组织+核团，无电极):
+[DBSMeshWorker]   label 1 : 378
+[DBSMeshWorker]   label 2 : 792
+[DBSMeshWorker]   label 3 : 201
+[DBSMeshWorker]   label 4 : 371
+[DBSMeshWorker]   label 5 : 541
+[DBSMeshWorker]   label 6 : 130
+[DBSMeshWorker]   label 10 : 138195
+[Conforming] Step C-1: 提取脑组织外壳 STL...
+[VTA Mesh] 30 % "CGAL Conforming 网格化 (路线 C)..."
+[VTA Mesh] 35 % "提取脑组织外壳 STL..."
+[Conforming] 脑组织外壳: 16224 pts, 32444 tri
+[Conforming] Step C-2: 生成电极 STL...
+[VTA Mesh] 40 % "生成电极 STL..."
+[DBSElectrodeSTL] 圆头绝缘体杆体: 1514 pts, 2880 cells
+[DBSElectrodeSTL] 包膜外壳: 1514 pts, 2880 cells, thickness= 0.2 mm
+[DBSElectrodeSTL] FEM 触点半径 = 0.625 mm (leadRadius= 0.635 , strict nested)
+[DBSElectrodeSTL] 触点 0 : 650 pts, 1008 cells, center=( 167.114 , 235.788 , 125.565 )
+[DBSElectrodeSTL] 触点 1 : 650 pts, 1008 cells, center=( 167.114 , 235.788 , 127.565 )
+[DBSElectrodeSTL] 触点 2 : 650 pts, 1008 cells, center=( 167.114 , 235.788 , 129.565 )
+[DBSElectrodeSTL] 触点 3 : 650 pts, 1008 cells, center=( 167.114 , 235.788 , 131.565 )
+[DBSElectrodeSTL] 电极 STL 生成完成
+[Conforming] Step C-3: 转换为 CGAL Polyhedron...
+[VTA Mesh] 45 % "转换 CGAL Polyhedron..."
+[Conforming] brain after repair: pts= 16224  polys= 32444  is_mesh= true
+[Conforming] brain polyhedron: faces= 32444  vertices= 16224  valid= true  closed= true
+[Conforming] brain 法向朝外 (bbox center BOUNDED) OK
+[Conforming] insulator after repair: pts= 1442  polys= 2880  is_mesh= true
+[Conforming] insulator polyhedron: faces= 2880  vertices= 1442  valid= true  closed= true
+[Conforming] insulator 法向朝外 (bbox center BOUNDED) OK
+[Conforming] encapsulation after repair: pts= 1442  polys= 2880  is_mesh= true
+[Conforming] encapsulation polyhedron: faces= 2880  vertices= 1442  valid= true  closed= true
+[Conforming] encapsulation 法向朝外 (bbox center BOUNDED) OK
+[Conforming] polyBrain faces= 32444  polyEncap faces= 2880  polyInsul faces= 2880
+[Conforming] contact0 after repair: pts= 506  polys= 1008  is_mesh= true
+[Conforming] contact0 polyhedron: faces= 1008  vertices= 506  valid= true  closed= true
+[Conforming] contact0 法向朝外 (bbox center BOUNDED) OK
+[Conforming] polyContacts[ 0 ] faces= 1008
+[Conforming] contact1 after repair: pts= 506  polys= 1008  is_mesh= true
+[Conforming] contact1 polyhedron: faces= 1008  vertices= 506  valid= true  closed= true
+[Conforming] contact1 法向朝外 (bbox center BOUNDED) OK
+[Conforming] polyContacts[ 1 ] faces= 1008
+[Conforming] contact2 after repair: pts= 506  polys= 1008  is_mesh= true
+[Conforming] contact2 polyhedron: faces= 1008  vertices= 506  valid= true  closed= true
+[Conforming] contact2 法向朝外 (bbox center BOUNDED) OK
+[Conforming] polyContacts[ 2 ] faces= 1008
+[Conforming] contact3 after repair: pts= 506  polys= 1008  is_mesh= true
+[Conforming] contact3 polyhedron: faces= 1008  vertices= 506  valid= true  closed= true
+[Conforming] contact3 法向朝外 (bbox center BOUNDED) OK
+[Conforming] polyContacts[ 3 ] faces= 1008
+[Conforming] domain polyhedra count = 7
+[Conforming] encapsulation enabled = true label= 51 thickness= 0.2 mm
+[VTA Mesh] 50 % "构造 polyhedral complex domain..."
+[Conforming] detect_features(60) + detect_borders...
+[Conforming] electrode cell sizing field: nearSize= 0.3 nearR= 1.5 farSize= 1.5 farR= 5
+[Conforming] electrode facet sizing field: nearSize= 0.18 nearR= 1.5 farSize= 1 farR= 5
+[Conforming] make_mesh_3 ...
+[VTA Mesh] 55 % "CGAL make_mesh_3 (耗时较长)..."
+[Conforming] mesh built! vertices= 49875  tets= 277347  facets= 30050  用时: 7543 ms
+[VTA Mesh] 80 % "构造网格 .mesh 文件..."
+[Conforming] tet label 计数:
+[Conforming]   sub 10 : 265430
+[Conforming]   sub 50 : 2416
+[Conforming]   sub 51 : 7490
+[Conforming]   sub 101 : 499
+[Conforming]   sub 102 : 519
+[Conforming]   sub 103 : 494
+[Conforming]   sub 104 : 499
+[Conforming] 给表面三角形打标签 (按 facet 两侧 subdomain)...
+[Conforming] surface patch index 计数:
+[Conforming]   patch 1 : 24408
+[Conforming]   patch 2 : 3195
+[Conforming]   patch 3 : 121
+[Conforming]   patch 4 : 1228
+[Conforming]   patch 5 : 73
+[Conforming]   patch 6 : 203
+[Conforming]   patch 7 : 35
+[Conforming]   patch 8 : 35
+[Conforming]   patch 9 : 178
+[Conforming]   patch 10 : 35
+[Conforming]   patch 11 : 35
+[Conforming]   patch 12 : 175
+[Conforming]   patch 13 : 35
+[Conforming]   patch 14 : 35
+[Conforming]   patch 15 : 193
+[Conforming]   patch 16 : 35
+[Conforming]   patch 17 : 31
+[Conforming] triangle label 计数 (-1 = ROI/脑壳):
+[Conforming]   label -1 : 24408
+[Conforming]   label 50 : 1226
+[Conforming]   label 51 : 3316
+[Conforming]   label 101 : 276
+[Conforming]   label 102 : 276
+[Conforming]   label 103 : 274
+[Conforming]   label 104 : 274
+[Conforming] 总耗时: 8488 ms
+[VTA Mesh] 95 % "网格文件写入完成"
+[VTA Mesh] 100 % "网格化完成"
+[VTA] 网格化完成: "C:/Users/123/AppData/Local/Temp/dbs_fem_mesh.mesh"
+[VTA-Debug] 即将创建 DBSSimWorker...
+[VTA-Debug] simWorker 已创建, 设置 spec...
+[VTA-Debug] spec/mesh path 已设置, 创建线程...
+[VTA-Debug] simWorker 已 moveToThread, 连接信号...
+[VTA-Debug] 信号连接完毕, 即将启动 simThread...
+[VTA-Debug] simThread->start() 已调用
+[VTA FEM] 0 % "开始 FEM 求解..."
+[VTA FEM] 5 % "读取 .mesh 文件..."
+[FEM] 网格:  49875 节点, 277347 四面体, 30050 三角形
+[FEM] triangle label 计数:
+[FEM]   tri label -1 : 24408
+[FEM]   tri label 50 : 1226
+[FEM]   tri label 51 : 3316
+[FEM]   tri label 101 : 276
+[FEM]   tri label 102 : 276
+[FEM]   tri label 103 : 274
+[FEM]   tri label 104 : 274
+[FEM] tetra label 计数:
+[FEM]   tet label 10 : 265430
+[FEM]   tet label 50 : 2416
+[FEM]   tet label 51 : 7490
+[FEM]   tet label 101 : 499
+[FEM]   tet label 102 : 519
+[FEM]   tet label 103 : 494
+[FEM]   tet label 104 : 499
+[VTA FEM] 20 % "组装刚度矩阵并求解..."
+[FEM] 电极表面节点总数: 1102
+[FEM]   electrode surface tri label 50 : 1226
+[FEM]   electrode surface tri label 101 : 276
+[FEM]   electrode surface tri label 102 : 276
+[FEM]   electrode surface tri label 103 : 274
+[FEM]   electrode surface tri label 104 : 274
+[FEM] Contact 0 polarity= 0 voltage= 0 surfaceNodes= 140 allSurfaceNodes= 140 volumeNodes= 163
+[FEM] Contact 1 polarity= 0 voltage= 0 surfaceNodes= 140 allSurfaceNodes= 140 volumeNodes= 165
+[FEM] Contact 2 polarity= -1 voltage= -3 surfaceNodes= 139 allSurfaceNodes= 139 volumeNodes= 161
+[FEM] Contact 3 polarity= 0 voltage= 0 surfaceNodes= 139 allSurfaceNodes= 139 volumeNodes= 163
+[FEM] amplitude= 3 interpreted_as_voltage_V= true useFloatingContacts= true useEncapsulationLayer= true
+[FEM] conductivity sigma_brain= 0.115 S/m sigma_encap= 0.07 S/m encapThickness= 0.2 mm
+[FEM] flux residual unit path: coords=mm, grad=1/mm, vol=mm^3, K=sigma*vol*1e-3 => A/V, residual=K*phi A, report=mA
+[FEM] outer boundary grounding skipped electrode-surface node hits: 0
+[FEM] Contact 0 floating nodes: 120 master= 40 polarity= 0
+[FEM] Contact 1 floating nodes: 120 master= 74 polarity= 0
+[FEM] Contact 3 floating nodes: 121 master= 142 polarity= 0
+[FEM] 电极表面节点未被脑组织tet共享: 78 / 1102
+[FEM]   surfaceNoBrain by label 50 : 0 / 692
+[FEM]   surfaceNoBrain by label 101 : 20 / 140
+[FEM]   surfaceNoBrain by label 102 : 20 / 140
+[FEM]   surfaceNoBrain by label 103 : 20 / 139
+[FEM]   surfaceNoBrain by label 104 : 18 / 139
+[FEM] Contact 0 surface brain-share: all= 140 shared= 120 noBrain= 20 brainFacingRatio= "0.857" | dirichletBC= 140 shared= 120 noBrain= 20
+[FEM] Contact 1 surface brain-share: all= 140 shared= 120 noBrain= 20 brainFacingRatio= "0.857" | dirichletBC= 140 shared= 120 noBrain= 20
+[FEM] Contact 2 surface brain-share: all= 139 shared= 119 noBrain= 20 brainFacingRatio= "0.856" | dirichletBC= 139 shared= 119 noBrain= 20
+[FEM] Contact 3 surface brain-share: all= 139 shared= 121 noBrain= 18 brainFacingRatio= "0.871" | dirichletBC= 139 shared= 121 noBrain= 18
+[FEM] 挖空电极: 内部孤立节点强制 Dirichlet = 239
+[FEM] 挖空电极: 其中电极表面节点 = 58
+[FEM] Dirichlet 节点: 12584 / 49875 "(25.2%)"
+[FEM]   其中 触点: 139 , 外边界: 12206
+[FEM] 自由节点: 36933
+[VTA FEM] 30 % "组装刚度矩阵 (277347 四面体)..."
+[FEM] Contact 0 effective contact Dirichlet BC nodes: 0 / 140 (brain-shared= 120 , noBrain= 20 , effectiveRatio= "0.000" )
+[FEM] Contact 1 effective contact Dirichlet BC nodes: 0 / 140 (brain-shared= 120 , noBrain= 20 , effectiveRatio= "0.000" )
+[FEM] Contact 2 effective contact Dirichlet BC nodes: 119 / 139 (brain-shared= 119 , noBrain= 20 , effectiveRatio= "1.000" )
+[FEM] Contact 3 effective contact Dirichlet BC nodes: 0 / 139 (brain-shared= 121 , noBrain= 18 , effectiveRatio= "0.000" )
+[VTA FEM] 60 % "求解线性方程组 (SuperLU)..."
+[FEM] 刚度矩阵:  36933 x 36933 , 非零: 556029
+[VTA FEM] 80 % "计算电场..."
+[FEM] Contact 0 floating phi: nodes= 120 master= 40 min= -0.471713 max= -0.471713 span= 0
+[FEM] Contact 1 floating phi: nodes= 120 master= 74 min= -0.918269 max= -0.918269 span= 0
+[FEM] Contact 3 floating phi: nodes= 121 master= 142 min= -0.943472 max= -0.943472 span= 0
+[FEM] Contact 0 flux residual estimate: "3.4117674e-15" mA brainSharedFluxNodes= 120 noBrainSkippedNodes= 20 contribTets= 1128 polarity= 0
+[FEM] Contact 1 flux residual estimate: "8.1807391e-15" mA brainSharedFluxNodes= 120 noBrainSkippedNodes= 20 contribTets= 1100 polarity= 0
+[FEM] Contact 2 flux residual estimate: "-3.0719384" mA brainSharedFluxNodes= 119 noBrainSkippedNodes= 20 contribTets= 1099 polarity= -1
+[FEM] Contact 3 flux residual estimate: "-1.3267274e-14" mA brainSharedFluxNodes= 121 noBrainSkippedNodes= 18 contribTets= 1102 polarity= 0
+[FEM] 电场范围: 0 ~ 9.27153 V/mm
+[FEM] 电场分布: p50= 0.00398535  p95= 0.21336  p99= 1.26635  p99.5= 2.17768  p99.9= 5.06895  robustMax(p1体积过滤)= 6.67684 V/mm
+[FEM] tet体积 p1 = 0.00128885 mm^3, E>=threshold( 0.2 ) cells= 14366  volume= 135.419 mm^3
+[FEM] 高场体积 E>= 1 V/mm: cells= 3443 volume= 10.7887 mm^3
+[FEM] 高场体积 E>= 5 V/mm: cells= 304 volume= 0.496097 mm^3
+[FEM] 高场体积 E>= 10 V/mm: cells= 0 volume= 0 mm^3
+[FEM] 高场体积 E>= 20 V/mm: cells= 0 volume= 0 mm^3
+[FEM] maxE cell: 2189 label= 51 vol= 0.00043629
+[FEM] maxE phi: -1.77778 -1.78454 -1.52008 -3
+[FEM] topE 0 cell= 2189 E= 9.27153 label= 51 vol= 0.00043629 center= 167.306 236.492 128.658 distToActiveContact= 1.16468
+[FEM] topE 1 cell= 44633 E= 9.23116 label= 51 vol= 0.000376086 center= 167.733 235.404 130.469 distToActiveContact= 1.1607
+[FEM] topE 2 cell= 25478 E= 8.77559 label= 51 vol= 0.000353811 center= 167.044 235.063 130.468 distToActiveContact= 1.15961
+[FEM] topE 3 cell= 55806 E= 7.98391 label= 51 vol= 0.000697461 center= 166.412 235.588 130.473 distToActiveContact= 1.16452
+[FEM] topE 4 cell= 56566 E= 7.77095 label= 51 vol= 0.000236604 center= 166.603 235.269 128.462 distToActiveContact= 1.32176
+[FEM] ===== 验证摘要 =====
+[FEM] Dirichlet 比例: "25.2%" | 电场 max: 9.27153 V/mm | robustMax: 6.67684 V/mm | 重点看 surfaceNodes / p99.9 / maxE top cells
+[VTA FEM] 90 % "构建 VTK 结果..."
+[FEM] VTK 结果:  49875 pts, 277347 cells
+[VTA FEM] 100 % "FEM 求解完成"
+[VTA] FEM 求解完成，提取等值面...
+[Phase F] FEM VTU saved: "F4" "E:/LQ/Code_Files/VS_Code/read/out/phase_f_project/F4_20260529_004931_result.vtu"
+[VTA] contour active point scalar = E_mag_Vmm
+[VTA] 脉宽= 60 μs, 阈值= 0.2 V/mm
+[VTA] 等值面:  3866 pts, 7732 cells
+[VTA SUMMARY] ================= 本次 FEM-VTA 汇报摘要 =================
+[VTA SUMMARY] 数据: T2 MNI image + nuclei labels(1-6), spacing~1mm
+[VTA SUMMARY] 网格: nodes= 49875  tets= 277347  tris= 30050  | 合理: nodes>5000, tets>20000
+[VTA SUMMARY] 刺激: UI amplitude= 3  按电压控制解释为 -3 V  pulseWidth= 60 us
+[VTA SUMMARY] 触点: selected= 2  surfaceNodes= 139  volumeNodes= 161  | 目标: brain-facing effective ratio>=0.95
+[VTA SUMMARY] selected contact BC有效性: allSurface= 139  allShared= 119  allNoBrain= 20  activeShared= 119  activeNoBrain= 20  effective= 119  brainFacingRatio= 0.856115  effectiveRatio= 1  | 判定: "BC耦合已充分"  [OK]
+[VTA SUMMARY] contact flux: C0= 3.41177e-15 mA C1= 8.18074e-15 mA C2= -3.07194 mA C3= -1.32673e-14 mA  | floating目标: inactive≈0
+[VTA SUMMARY] 电极表面共享: surfaceNoBrain= 78  hollowedSurface= 58  | 目标: hollowedSurface=0
+[VTA SUMMARY] Dirichlet: total= 12584 "(25.2%)"  contact= 139  outer= 12206  | 小 ROI 下外边界占比偏高是正常现象
+[VTA SUMMARY] E-field: p50= 0.00398535  p95= 0.21336  p99= 1.26635  p99.5= 2.17768  p99.9= 5.06895  max= 9.27153 V/mm  robustMax= 6.67684  | 重点看 p99.9/robustMax 而非全局 p99/raw max  [OK]
+[VTA SUMMARY] maxE cell: label= 51  vol= 0.00043629 mm^3  tinyVolP1= 0.00128885  | 合理: raw max 不应只由极小体积单元主 导
+[VTA SUMMARY] thresholded brain: cells= 14366  volume= 135.419 mm^3
+[VTA SUMMARY] VTA: threshold= 0.2 V/mm  pts= 3866  cells= 7732  bounds= 163.683 170.693 232.309 239.328 124.471 133.204  halfExtents= 3.50498 3.50945 4.36684  diagHalf= 6.60836  volume= 148.536  eqSphereR= 3.28535  | 文献目标(3V/60us/3389): 半径约2-3mm, 直径4-6mm  [OK]
+[VTA SUMMARY] 结论: solver= OK , VTA extract= OK , contact meshing= OK
+[VTA SUMMARY] ========================================================
+[VTA Display] real VTA bounds: 163.683 170.693 232.309 239.328 124.471 133.204
+[VTA Display] real VTA center: 167.188 235.819 128.837 extent (mm): 7.00996 7.01891 8.73368 approx radius: 6.60836
+[VTA Display] 3D actor scene bounds: -3.36792 3.46394 0.475739 8.98983 -3.35482 3.40374
+[Phase F] ================= FEM run end: success =================
