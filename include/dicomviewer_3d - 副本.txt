@@ -1,0 +1,93 @@
+#ifndef DICOMVIEWER_3D_H
+#define DICOMVIEWER_3D_H
+#pragma execution_character_set("utf-8")
+#include <QMainWindow>
+#include <QPushButton>
+#include <QLabel>
+#include <QSlider>
+#include <QLineEdit>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+
+// ===== VTK =====
+#include <QVTKOpenGLNativeWidget.h>
+#include <vtkSmartPointer.h>
+#include <vtkRenderer.h>
+#include <vtkImageData.h>
+#include <vtkVolume.h>
+#include <vtkDICOMImageReader.h>
+#include <vtkInteractorStyleImage.h>
+
+// 【新增/替换】
+#include <vtkImageViewer2.h>        // 替换 ResliceImageViewer
+#include <vtkImageActor.h>          // 用于显示标签层
+#include <vtkImageMapToColors.h>    // 用于给标签上色
+#include <vtkLookupTable.h>         // 颜色表
+
+class dicomviewer_3d : public QMainWindow
+{
+    Q_OBJECT
+
+public:
+    explicit dicomviewer_3d(QWidget* parent = nullptr);
+    ~dicomviewer_3d();
+
+    // 获取 Widget 指针
+    QVTKOpenGLNativeWidget* getAxialWidget() const { return vtkWidgetA; }
+    QVTKOpenGLNativeWidget* getCoronalWidget() const { return vtkWidgetC; }
+    QVTKOpenGLNativeWidget* getSagittalWidget() const { return vtkWidgetS; }
+    QVTKOpenGLNativeWidget* get3DWidget() const { return vtkWidget3D; }
+
+    void createUI();
+    void initVtkViews();
+    void initLookupTable();
+
+    // 加载数据
+    bool loadNiftiVTK(const QString& file);
+    bool loadDicomVTK(const QString& file);
+    bool loadLabelVTK(const QString& file);
+
+    // 渲染逻辑
+    void renderVTK_nii(); // 主渲染函数
+    void renderVTK();
+
+    // 【新增】同步切片函数：当 Viewer 切片改变时，手动更新 Overlay 的切片
+    void updateOverlaySlice(int viewIndex);
+
+    // 聚焦功能 (保留但需要修改实现)
+    void focusOnROI(double* targetPos = nullptr, double viewSizeMM = 40.0);
+
+public slots:
+    void slot_openDicomFile();
+    void slot_importLabel();
+    void slot_toggleOverlay(); // 控制标签显示/隐藏
+
+private:
+    // UI 控件
+    QPushButton* btn_openDicom;
+    QPushButton* btn_importDicom;
+    QPushButton* btn_shift; // 现用于切换标签可见性
+    QPushButton* btn_focus;
+
+    QVTKOpenGLNativeWidget* vtkWidgetA;
+    QVTKOpenGLNativeWidget* vtkWidgetC;
+    QVTKOpenGLNativeWidget* vtkWidgetS;
+    QVTKOpenGLNativeWidget* vtkWidget3D;
+
+    // VTK 核心组件
+
+    vtkSmartPointer<vtkImageViewer2> viewers[3];
+    vtkSmartPointer<vtkImageActor> overlayActors[3];
+
+    vtkSmartPointer<vtkRenderer> ren3d;
+    vtkSmartPointer<vtkImageData> vtkImage;      // 底图 (MRI)
+    vtkSmartPointer<vtkImageData> vtkLabelImage; // 标签图 (Label)
+
+    vtkSmartPointer<vtkLookupTable> labelLUT;    // 颜色表
+
+    // 智能窗宽窗位记录
+    double m_smartWindow = 0;
+    double m_smartLevel = 0;
+};
+
+#endif // DICOMVIEWER_3D_H
