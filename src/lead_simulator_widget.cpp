@@ -58,6 +58,7 @@ void LeadSimulatorWidget::setupUi()
     cmbPhaseFPreset->addItem("F3: Contact2, No Encap");
     cmbPhaseFPreset->addItem("F4: Contact2, Encap σ=0.070");
     cmbPhaseFPreset->addItem("Video Demo: Contact1, 4.0V/80us");
+    cmbPhaseFPreset->setItemText(1, "F1 / Standard STN: Contact2, Encap sigma=0.115");
     hPreset->addWidget(cmbPhaseFPreset, 1);
     cLayout->addLayout(hPreset);
 
@@ -112,6 +113,21 @@ void LeadSimulatorWidget::setupUi()
     cmbVTADisplayPreset->addItem("黄色透明");
     hVtaPreset->addWidget(cmbVTADisplayPreset, 1);
     cLayout->addLayout(hVtaPreset);
+
+    chkNucleiBackfill = new QCheckBox("启用核团 σ 分区");
+    chkNucleiBackfill->setChecked(false);
+    chkNucleiBackfill->setToolTip("Phase G: mesh 后按 tet 中心采样核团 label 1-6，并使用核团电导率");
+    cLayout->addWidget(chkNucleiBackfill);
+
+    chkSaveFEMOutputs = new QCheckBox("Save FEM output files (.vtu)");
+    chkSaveFEMOutputs->setChecked(false);
+    chkSaveFEMOutputs->setToolTip("Write timestamped FEM result files to out/phase_f_project. Leave unchecked for log-only runs.");
+    cLayout->addWidget(chkSaveFEMOutputs);
+
+    chkAiManagedOutput = new QCheckBox("AI 代管输出");
+    chkAiManagedOutput->setChecked(false);
+    chkAiManagedOutput->setToolTip("Manual helper: write this run's log, config, mesh, and VTU to out/ai_runs. Command-line AI plans enable this automatically.");
+    cLayout->addWidget(chkAiManagedOutput);
 
     // 4. 触点控制 (网格布局，类似图二的排版)
     QGridLayout* grid = new QGridLayout;
@@ -435,4 +451,34 @@ void LeadSimulatorWidget::setPhaseFPresetIndex(int index)
     cmbPhaseFPreset->blockSignals(true);
     cmbPhaseFPreset->setCurrentIndex(index);
     cmbPhaseFPreset->blockSignals(false);
+}
+
+void LeadSimulatorWidget::setNucleiBackfillEnabled(bool enabled)
+{
+    if (!chkNucleiBackfill) {
+        return;
+    }
+    chkNucleiBackfill->blockSignals(true);
+    chkNucleiBackfill->setChecked(enabled);
+    chkNucleiBackfill->blockSignals(false);
+}
+
+void LeadSimulatorWidget::setFEMOutputExportEnabled(bool enabled)
+{
+    if (!chkSaveFEMOutputs) {
+        return;
+    }
+    chkSaveFEMOutputs->blockSignals(true);
+    chkSaveFEMOutputs->setChecked(enabled);
+    chkSaveFEMOutputs->blockSignals(false);
+}
+
+void LeadSimulatorWidget::setAiManagedOutputEnabled(bool enabled)
+{
+    if (!chkAiManagedOutput) {
+        return;
+    }
+    chkAiManagedOutput->blockSignals(true);
+    chkAiManagedOutput->setChecked(enabled);
+    chkAiManagedOutput->blockSignals(false);
 }

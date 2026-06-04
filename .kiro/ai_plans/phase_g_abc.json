@@ -1,0 +1,20 @@
+{
+  "planId": "phase_g_abc",
+  "mainImage": "out/build/release/mni_t2_job1901422.nii.gz",
+  "labelImage": "out/build/release/mni_structures_job1901422.nii.gz",
+  "outputRoot": "out/ai_runs",
+  "runs": [
+    {
+      "id": "001_F1_baseline",
+      "case": "F1",
+      "nucleiBackfill": false,
+      "exportVtu": false
+    },
+    {
+      "id": "002_F1_nuclei_on",
+      "case": "F1",
+      "nucleiBackfill": true,
+      "exportVtu": true
+    }
+  ]
+}

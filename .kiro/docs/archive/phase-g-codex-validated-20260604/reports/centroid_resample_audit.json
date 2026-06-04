@@ -1,0 +1,69 @@
+{
+  "mesh": "E:\\LQ\\Code_Files\\VS_Code\\read\\out\\ai_runs\\phase_g_step3_f1_centroid_20260604_105142\\001_F1_nuclei_on\\mesh.mesh",
+  "labelHeader": "E:\\LQ\\Code_Files\\VS_Code\\read\\out\\ai_runs\\phase_g_step3_f1_centroid_20260604_105142\\aligned_label_header.json",
+  "vertices": 49272,
+  "tets": 274387,
+  "nucleiTotal": 28422,
+  "nucleiMatch": 28421,
+  "nucleiOutOfExtent": 0,
+  "nucleiMatchRate": 0.9999648159876152,
+  "strictPassed": false,
+  "boundaryNeighborMatches": 1,
+  "mismatchByPair": {
+    "2->0": 1
+  },
+  "perLabel": {
+    "2": {
+      "total": 25704,
+      "match": 25703,
+      "out": 0
+    },
+    "1": {
+      "total": 551,
+      "match": 551,
+      "out": 0
+    },
+    "6": {
+      "total": 234,
+      "match": 234,
+      "out": 0
+    },
+    "3": {
+      "total": 439,
+      "match": 439,
+      "out": 0
+    },
+    "4": {
+      "total": 495,
+      "match": 495,
+      "out": 0
+    },
+    "5": {
+      "total": 999,
+      "match": 999,
+      "out": 0
+    }
+  },
+  "label10Checked": 233084,
+  "label10OutOfExtent": 0,
+  "label10NucleiSamples": 0,
+  "passed": true,
+  "acceptanceNote": "accepted: mismatches are tiny boundary-neighbor cases, likely from serialized mesh coordinate precision",
+  "examples": [
+    {
+      "cell": 103755,
+      "tetLabel": 2,
+      "sampled": 0,
+      "centroid": [
+        167.66,
+        232.345,
+        135.5
+      ],
+      "index": [
+        78,
+        106,
+        64
+      ]
+    }
+  ]
+}

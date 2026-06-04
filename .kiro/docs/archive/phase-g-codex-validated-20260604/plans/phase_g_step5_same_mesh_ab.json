@@ -1,0 +1,22 @@
+{
+  "planId": "phase_g_step5_same_mesh_ab",
+  "mainImage": "out/build/release/mni_t2_job1901422.nii.gz",
+  "labelImage": "out/build/release/mni_structures_job1901422.nii.gz",
+  "outputRoot": "out/ai_runs",
+  "runs": [
+    {
+      "id": "001_same_mesh_nuclei_on",
+      "case": "F1",
+      "nucleiBackfill": true,
+      "exportVtu": true,
+      "inputMesh": "out/ai_runs/phase_g_step3_f1_centroid_20260604_105142/001_F1_nuclei_on/mesh.mesh"
+    },
+    {
+      "id": "002_same_mesh_homogeneous",
+      "case": "F1",
+      "nucleiBackfill": false,
+      "exportVtu": true,
+      "inputMesh": "out/ai_runs/phase_g_step5_same_mesh_ab/mesh_homogeneous.mesh"
+    }
+  ]
+}

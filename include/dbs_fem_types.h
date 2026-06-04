@@ -99,6 +99,12 @@ struct DBSSimSpec
     double sigmaEncapsulation = 0.115;
     double encapsulationThickness = 0.2;
 
+    // Phase G: post-mesh nuclei centroid backfill.
+    // Default off to preserve the Phase F validated homogeneous baseline.
+    bool   useNucleiBackfill = false;
+    double sigmaNuclei       = 0.333;
+    bool   logNucleiBackfill = true;
+
     // 网格参数 (P2 方案 0：image-based + STL 后处理打标签)
     // 不再让标签图包含电极，因此电极相关的网格密度由 facet_size 控制
     double roiHalfSize    = 25.0;   // mm, 局部 ROI 半边长（P1.2 验证过的稳定值）

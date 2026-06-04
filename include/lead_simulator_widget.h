@@ -34,6 +34,18 @@ public:
 
     double getDepth() const { return spnDepth->value(); }
     void setDepth(double v) { spnDepth->setValue(v); }
+    bool isNucleiBackfillEnabled() const {
+        return chkNucleiBackfill && chkNucleiBackfill->isChecked();
+    }
+    bool isFEMOutputExportEnabled() const {
+        return chkSaveFEMOutputs && chkSaveFEMOutputs->isChecked();
+    }
+    bool isAiManagedOutputEnabled() const {
+        return chkAiManagedOutput && chkAiManagedOutput->isChecked();
+    }
+    void setNucleiBackfillEnabled(bool enabled);
+    void setFEMOutputExportEnabled(bool enabled);
+    void setAiManagedOutputEnabled(bool enabled);
 
     // 【关键】Qt 安全的渲染请求：通过 update() 走 Qt 事件循环，避免 GL 上下文抢占
     void requestRender() { if (m_vtkWidget) m_vtkWidget->update(); }
@@ -78,6 +90,9 @@ private:
     QSpinBox* spnFrequency;
     QDoubleSpinBox* spnDepth;
     QCheckBox* chkShowVTA;
+    QCheckBox* chkNucleiBackfill = nullptr;
+    QCheckBox* chkSaveFEMOutputs = nullptr;
+    QCheckBox* chkAiManagedOutput = nullptr;
     QPushButton* btnContact[4];
     QPushButton* btnComputeVTA;
 

@@ -1,0 +1,16 @@
+{
+  "planId": "phase_g_step1_f1_f4",
+  "mainImage": "out/build/release/mni_t2_job1901422.nii.gz",
+  "labelImage": "out/build/release/mni_structures_job1901422.nii.gz",
+  "outputRoot": "out/ai_runs",
+  "runs": [
+    { "id": "001_F1_baseline", "case": "F1", "nucleiBackfill": false, "exportVtu": false },
+    { "id": "002_F1_nuclei_on", "case": "F1", "nucleiBackfill": true, "exportVtu": true },
+    { "id": "003_F2_baseline", "case": "F2", "nucleiBackfill": false, "exportVtu": false },
+    { "id": "004_F2_nuclei_on", "case": "F2", "nucleiBackfill": true, "exportVtu": true },
+    { "id": "005_F3_baseline", "case": "F3", "nucleiBackfill": false, "exportVtu": false },
+    { "id": "006_F3_nuclei_on", "case": "F3", "nucleiBackfill": true, "exportVtu": true },
+    { "id": "007_F4_baseline", "case": "F4", "nucleiBackfill": false, "exportVtu": false },
+    { "id": "008_F4_nuclei_on", "case": "F4", "nucleiBackfill": true, "exportVtu": true }
+  ]
+}

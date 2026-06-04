@@ -67,8 +67,19 @@ void DBSElectrodeSTL::computeContactCenters()
 
     // 触点从尖端开始向 entry 方向排列 (即沿 -dir 方向)
     // 第 0 个触点的中心距尖端: tipLength + contactLength/2
-    // 3389 型号尖端长度约 1.5mm (半球)
-    double tipLength = m_spec.leadRadius;  // 球形尖端半径≈杆体半径
+    //
+    // ⚠ 重要：tipLength 必须等于电极厂家 spec 里的 "tip-to-contact_0" 距离，
+    // 不是几何半球本身的高度。Medtronic 3389 spec 这个值是 1.5mm
+    //   - 物理上这 1.5mm 包含了一个 leadRadius=0.635mm 的半球头 +
+    //     一段长度为 (1.5 - 0.635) = 0.865mm 的直杆段
+    //   - OSS-DBS / Lead-DBS / 真实 Medtronic 都按 1.5mm 算 contact 起点
+    //
+    // 历史 bug：Phase A 加圆头几何时这里被改成 leadRadius=0.635，导致
+    // contact 0 起点比 OSS 早 0.865mm，4 个 case hotspot z 都偏 0.77~0.88mm。
+    // 修复回 1.5mm 之后，FEM 跟 OSS 的 hotspot z 严格对齐。
+    double tipLength = (m_spec.leadType == 0) ? 1.5  // Medtronic 3389
+                     : (m_spec.leadType == 1) ? 1.5  // Medtronic 3387 (同 spec)
+                     : m_spec.leadRadius;            // 其他型号兜底（Cartesia 等）
 
     for (int i = 0; i < m_spec.numContacts && i < 4; ++i) {
         double offset = tipLength
@@ -349,7 +360,11 @@ bool DBSElectrodeSTL::generate()
     computeContactCenters();
 
     // 2. 计算绝缘体杆体的范围
-    double tipLength = m_spec.leadRadius;
+    // tipLength 必须跟 computeContactCenters() 里保持一致（OSS Medtronic 3389
+    // spec: tip-to-contact_0 = 1.5mm，含半球+一小段直杆）。
+    double tipLength = (m_spec.leadType == 0) ? 1.5
+                     : (m_spec.leadType == 1) ? 1.5
+                     : m_spec.leadRadius;
     double tip[3];
     tip[0] = m_spec.target[0] + m_spec.depthOffset * dir[0];
     tip[1] = m_spec.target[1] + m_spec.depthOffset * dir[1];

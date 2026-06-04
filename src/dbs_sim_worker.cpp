@@ -184,6 +184,9 @@ bool DBSSimWorker::solveElectricField(const dbs_fem::DBSMeshData& mesh,
     auto sigma_map = dbs_fem::getDefaultConductivityMap();
     sigma_map[dbs_fem::LABEL_BRAIN_TISSUE] = m_spec.sigmaBrain;
     sigma_map[dbs_fem::LABEL_ENCAPSULATION] = m_spec.sigmaEncapsulation;
+    for (int i = 1; i <= 6; ++i) {
+        sigma_map[i] = m_spec.sigmaNuclei;
+    }
     auto sigmaForLabel = [&sigma_map, this](int label) -> double {
         if (label == dbs_fem::LABEL_BRAIN_TISSUE) return m_spec.sigmaBrain;
         if (label == dbs_fem::LABEL_ENCAPSULATION) return m_spec.sigmaEncapsulation;
@@ -285,6 +288,7 @@ bool DBSSimWorker::solveElectricField(const dbs_fem::DBSMeshData& mesh,
              << "useFloatingContacts=" << m_spec.useFloatingContacts
              << "useEncapsulationLayer=" << m_spec.useEncapsulationLayer;
     qDebug() << "[FEM] conductivity sigma_brain=" << m_spec.sigmaBrain << "S/m"
+             << "sigma_nuclei=" << m_spec.sigmaNuclei << "S/m"
              << "sigma_encap=" << m_spec.sigmaEncapsulation << "S/m"
              << "encapThickness=" << m_spec.encapsulationThickness << "mm";
     qDebug() << "[FEM] flux residual unit path: coords=mm, grad=1/mm, vol=mm^3, K=sigma*vol*1e-3 => A/V, residual=K*phi A, report=mA";

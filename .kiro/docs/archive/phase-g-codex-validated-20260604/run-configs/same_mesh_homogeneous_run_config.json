@@ -1,0 +1,38 @@
+{
+    "amplitude": 3,
+    "case": "F1",
+    "contactLength": 1.5,
+    "contactPolarity": [
+        0,
+        0,
+        -1,
+        0
+    ],
+    "contactSpacing": 0.5,
+    "createdAt": "2026-06-04T11:06:51",
+    "depthOffset": 0,
+    "encapsulationThickness": 0.2,
+    "entry": [
+        128.08,
+        193.89,
+        201
+    ],
+    "exportFEMOutputs": true,
+    "isVoltageControl": true,
+    "leadRadius": 0.635,
+    "leadType": 0,
+    "meshPath": "E:/LQ/Code_Files/VS_Code/read/out/ai_runs/phase_g_step5_same_mesh_ab/mesh_homogeneous.mesh",
+    "numContacts": 4,
+    "pulseWidth": 60,
+    "resultPath": "E:/LQ/Code_Files/VS_Code/read/out/ai_runs/phase_g_step5_same_mesh_ab_20260604_110613/002_same_mesh_homogeneous/result.vtu",
+    "sigmaBrain": 0.115,
+    "sigmaEncapsulation": 0.115,
+    "sigmaNuclei": 0.333,
+    "target": [
+        173.47,
+        237.42,
+        128
+    ],
+    "useEncapsulationLayer": true,
+    "useNucleiBackfill": false
+}

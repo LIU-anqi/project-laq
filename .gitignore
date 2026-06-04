@@ -120,3 +120,20 @@ $RECYCLE.BIN/
 .kiro/tools/_*.txt
 .kiro/tools/_*.json
 .kiro/poc/*/build-*/
+
+# ============================================
+# Project generated outputs and local references
+# ============================================
+out/build/
+out/ai_runs/
+out/phase_f_project/
+*.vtu
+*.mesh
+
+.kiro/tools/__pycache__/
+.kiro/poc/**/build/
+.kiro/poc/**/build-*/
+.kiro/poc/**/build-vs/
+.kiro/poc/**/_build/
+
+fellow_reference/

@@ -2,14 +2,19 @@
 #include "dicomviewer_3d.h"
 
 #include <QDebug>
+#include <QApplication>
 #include <QCoreApplication>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QMessageBox>
 #include <QDir>
 #include <QDateTime>
+#include <QFile>
 #include <QFileDialog>
 #include <QFileInfo>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QListView>
 #include <QRegularExpression>
 #include <QStringList>
@@ -105,6 +110,8 @@ VTK_MODULE_INIT(vtkRenderingFreeType);     // 修复 文字显示问题
 #include <vtkMassProperties.h>
 #include <vtkXMLUnstructuredGridWriter.h>
 
+#include <algorithm>
+
 namespace {
 QString phaseFProjectRoot()
 {
@@ -159,6 +166,78 @@ bool writePhaseFResult(vtkUnstructuredGrid* result, const QString& path)
     writer->SetInputData(result);
     writer->SetDataModeToBinary();
     return writer->Write() != 0;
+}
+
+bool writeAlignedLabelDump(vtkImageData* image, const QString& outDir)
+{
+    if (!image) {
+        return false;
+    }
+
+    QDir dir(outDir);
+    if (!dir.exists() && !dir.mkpath(".")) {
+        return false;
+    }
+
+    int extent[6] = {0};
+    double origin[3] = {0.0};
+    double spacing[3] = {1.0, 1.0, 1.0};
+    image->GetExtent(extent);
+    image->GetOrigin(origin);
+    image->GetSpacing(spacing);
+
+    const int nx = extent[1] - extent[0] + 1;
+    const int ny = extent[3] - extent[2] + 1;
+    const int nz = extent[5] - extent[4] + 1;
+    if (nx <= 0 || ny <= 0 || nz <= 0) {
+        return false;
+    }
+
+    const QString rawPath = dir.filePath("aligned_label_u8.raw");
+    QFile raw(rawPath);
+    if (!raw.open(QIODevice::WriteOnly)) {
+        return false;
+    }
+
+    QByteArray row;
+    row.resize(nx);
+    for (int k = extent[4]; k <= extent[5]; ++k) {
+        for (int j = extent[2]; j <= extent[3]; ++j) {
+            for (int i = extent[0]; i <= extent[1]; ++i) {
+                const int value = static_cast<int>(std::round(
+                    image->GetScalarComponentAsDouble(i, j, k, 0)));
+                row[i - extent[0]] = static_cast<char>(std::max(0, std::min(255, value)));
+            }
+            raw.write(row.constData(), row.size());
+        }
+    }
+    raw.close();
+
+    QJsonObject header;
+    QJsonArray extentJson;
+    QJsonArray originJson;
+    QJsonArray spacingJson;
+    QJsonArray dimsJson;
+    for (int v : extent) extentJson.append(v);
+    for (double v : origin) originJson.append(v);
+    for (double v : spacing) spacingJson.append(v);
+    dimsJson.append(nx);
+    dimsJson.append(ny);
+    dimsJson.append(nz);
+    header["rawFile"] = QFileInfo(rawPath).fileName();
+    header["scalarType"] = "uint8";
+    header["order"] = "x-fastest, then y, then z";
+    header["extent"] = extentJson;
+    header["origin"] = originJson;
+    header["spacing"] = spacingJson;
+    header["dims"] = dimsJson;
+
+    QFile headerFile(dir.filePath("aligned_label_header.json"));
+    if (!headerFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        return false;
+    }
+    headerFile.write(QJsonDocument(header).toJson(QJsonDocument::Indented));
+    return true;
 }
 }
 
@@ -4328,6 +4407,399 @@ void dicomviewer_3d::slot_resetWindowLevel()
     }
 }
 
+bool dicomviewer_3d::runAiPlanFile(const QString& planPath, bool autoExit)
+{
+    QString error;
+    AiRunPlan plan;
+    if (!AiRunManager::loadPlan(planPath, &plan, &error)) {
+        qWarning() << "[AI RUN] failed to load plan:" << planPath << error;
+        if (autoExit) {
+            QTimer::singleShot(0, qApp, &QCoreApplication::quit);
+        }
+        return false;
+    }
+
+    m_aiPlan = plan;
+    m_aiPlanPath = QFileInfo(planPath).absoluteFilePath();
+    m_aiAutoExit = autoExit;
+    m_aiPlanActive = true;
+    m_aiManualManagedRun = false;
+    m_aiRunIndex = -1;
+
+    const QString batchName = QString("%1_%2")
+        .arg(AiRunManager::safeToken(plan.planId, "ai_plan"),
+             AiRunManager::timestamp());
+    m_aiBatchDir = QDir(plan.outputRoot.isEmpty()
+        ? AiRunManager::defaultOutputRoot()
+        : plan.outputRoot).filePath(batchName);
+    QDir().mkpath(m_aiBatchDir);
+
+    AiRunManager::setLogFile(QDir(m_aiBatchDir).filePath("batch.log"));
+    qDebug() << "[AI RUN] plan begin:" << plan.planId
+             << "planPath=" << m_aiPlanPath
+             << "batchDir=" << m_aiBatchDir
+             << "runs=" << plan.runs.size();
+
+    QString copyError;
+    AiRunManager::copyFile(m_aiPlanPath, QDir(m_aiBatchDir).filePath("plan.json"), &copyError);
+    if (!copyError.isEmpty()) {
+        qWarning() << "[AI RUN]" << copyError;
+    }
+
+    QJsonObject manifest;
+    manifest["planId"] = plan.planId;
+    manifest["planPath"] = m_aiPlanPath;
+    manifest["batchDir"] = m_aiBatchDir;
+    manifest["mainImage"] = plan.mainImage;
+    manifest["labelImage"] = plan.labelImage;
+    manifest["startedAt"] = QDateTime::currentDateTime().toString(Qt::ISODate);
+    QJsonArray runs;
+    for (const AiRunItem& item : plan.runs) {
+        runs.append(AiRunManager::runItemToJson(item));
+    }
+    manifest["runs"] = runs;
+    AiRunManager::writeJsonFile(QDir(m_aiBatchDir).filePath("manifest.json"), manifest);
+
+    auto abortPlan = [this](const QString& reason) {
+        QJsonObject status;
+        status["success"] = false;
+        status["reason"] = reason;
+        status["finishedAt"] = QDateTime::currentDateTime().toString(Qt::ISODate);
+        status["batchDir"] = m_aiBatchDir;
+        AiRunManager::writeJsonFile(QDir(m_aiBatchDir).filePath("plan_status.json"), status);
+        qWarning() << "[AI RUN] plan aborted:" << reason;
+        AiRunManager::closeLogFile();
+        m_aiPlanActive = false;
+        if (m_aiAutoExit) {
+            QTimer::singleShot(0, qApp, &QCoreApplication::quit);
+        }
+    };
+
+    if (plan.mainImage.isEmpty() || !QFileInfo::exists(plan.mainImage)) {
+        qWarning() << "[AI RUN] main image missing:" << plan.mainImage;
+        abortPlan("main image missing");
+        return false;
+    }
+    if (!loadNiftiVTK(plan.mainImage)) {
+        qWarning() << "[AI RUN] failed to load main image:" << plan.mainImage;
+        abortPlan("failed to load main image");
+        return false;
+    }
+    renderVTK_nii();
+
+    if (!plan.labelImage.isEmpty()) {
+        if (!QFileInfo::exists(plan.labelImage)) {
+            qWarning() << "[AI RUN] label image missing:" << plan.labelImage;
+            abortPlan("label image missing");
+            return false;
+        }
+        if (!loadLabelVTK(plan.labelImage)) {
+            qWarning() << "[AI RUN] failed to load label image:" << plan.labelImage;
+            abortPlan("failed to load label image");
+            return false;
+        }
+        qDebug() << "[AI RUN] label image loaded:" << plan.labelImage;
+        if (writeAlignedLabelDump(vtkLabelImage, m_aiBatchDir)) {
+            qDebug() << "[AI RUN] aligned label dump saved:" << m_aiBatchDir;
+        } else {
+            qWarning() << "[AI RUN] failed to save aligned label dump:" << m_aiBatchDir;
+        }
+    }
+
+    QTimer::singleShot(0, this, &dicomviewer_3d::startNextAiPlanRun);
+    return true;
+}
+
+bool dicomviewer_3d::applyAiRunItem(const AiRunItem& item)
+{
+    if (!m_trajManager || !m_trajManager->m_dbsLead) {
+        qWarning() << "[AI RUN] cannot apply run without lead model";
+        return false;
+    }
+
+    if (item.presetIndex >= 0) {
+        slot_applyPhaseFPreset(item.presetIndex);
+    } else {
+        qWarning() << "[AI RUN] unknown preset/case, keeping current parameters:" << item.caseId;
+    }
+
+    auto* lead = m_trajManager->m_dbsLead;
+
+    if (item.hasUseEncapsulation) {
+        m_phaseFUseEncapsulation = item.useEncapsulation;
+    }
+    if (item.hasSigmaEncapsulation) {
+        m_phaseFSigmaEncapsulation = item.sigmaEncapsulation;
+    }
+    if (item.hasEncapsulationThickness) {
+        m_phaseFEncapsulationThickness = item.encapsulationThickness;
+    }
+
+    if (item.hasTarget) {
+        std::copy(item.target, item.target + 3, m_trajManager->targetPos);
+        m_trajManager->hasTarget = true;
+    }
+    if (item.hasEntry) {
+        std::copy(item.entry, item.entry + 3, m_trajManager->entryPos);
+        m_trajManager->hasEntry = true;
+    }
+    if (m_trajManager->hasTarget && m_trajManager->hasEntry) {
+        lead->UpdateTrajectory(m_trajManager->entryPos, m_trajManager->targetPos);
+        lead->SetVisibility(true);
+    }
+
+    if (item.hasLeadType) {
+        lead->setLeadType(item.leadType);
+    }
+    if (item.hasDepthOffset) {
+        lead->setDepthOffset(item.depthOffset);
+    }
+    if (item.hasAmplitude) {
+        lead->setAmplitude(item.amplitude);
+    }
+    if (item.hasPulseWidth) {
+        lead->setPulseWidth(item.pulseWidth);
+    }
+    if (item.hasFrequency) {
+        lead->setFrequency(item.frequency);
+    }
+    if (item.hasPolarities) {
+        for (int i = 0; i < 4; ++i) {
+            ContactPolarity p = POLARITY_OFF;
+            if (item.polarities[i] == -1) p = POLARITY_CATHODE;
+            else if (item.polarities[i] == 1) p = POLARITY_ANODE;
+            lead->setContactPolarity(i, p);
+        }
+    }
+
+    if (m_leadSimulator) {
+        int polarities[4] = {0, 0, 0, 0};
+        for (int i = 0; i < 4; ++i) {
+            const ContactPolarity p = lead->getContactPolarity(i);
+            polarities[i] = (p == POLARITY_CATHODE) ? -1 : (p == POLARITY_ANODE) ? 1 : 0;
+        }
+        m_leadSimulator->setParameters(lead->getLeadType(),
+                                       lead->getDepthOffset(),
+                                       lead->getAmplitude(),
+                                       lead->getPulseWidth(),
+                                       lead->getFrequency(),
+                                       false,
+                                       polarities);
+        if (item.presetIndex >= 0) {
+            m_leadSimulator->setPhaseFPresetIndex(item.presetIndex);
+        }
+        m_leadSimulator->setNucleiBackfillEnabled(item.nucleiBackfill);
+        m_leadSimulator->setFEMOutputExportEnabled(item.exportVtu);
+        m_leadSimulator->setAiManagedOutputEnabled(true);
+    }
+
+    refreshCoordinateDisplay();
+    refreshAllViews();
+    calculateVTAIntersection();
+
+    qDebug() << "[AI RUN] applied run item:"
+             << "id=" << item.id
+             << "case=" << item.caseId
+             << "presetIndex=" << item.presetIndex
+             << "nucleiBackfill=" << item.nucleiBackfill
+             << "exportVtu=" << item.exportVtu;
+    return true;
+}
+
+void dicomviewer_3d::startNextAiPlanRun()
+{
+    if (!m_aiPlanActive) {
+        return;
+    }
+
+    AiRunManager::closeLogFile();
+    ++m_aiRunIndex;
+
+    if (m_aiRunIndex >= m_aiPlan.runs.size()) {
+        AiRunManager::setLogFile(QDir(m_aiBatchDir).filePath("batch.log"));
+        QJsonObject status;
+        status["success"] = true;
+        status["reason"] = "success";
+        status["finishedAt"] = QDateTime::currentDateTime().toString(Qt::ISODate);
+        status["batchDir"] = m_aiBatchDir;
+        status["runs"] = m_aiPlan.runs.size();
+        AiRunManager::writeJsonFile(QDir(m_aiBatchDir).filePath("plan_status.json"), status);
+        qDebug() << "[AI RUN] plan complete:" << m_aiPlan.planId
+                 << "batchDir=" << m_aiBatchDir;
+        AiRunManager::closeLogFile();
+        m_aiPlanActive = false;
+        if (m_leadSimulator) {
+            m_leadSimulator->setAiManagedOutputEnabled(false);
+        }
+        if (m_aiAutoExit) {
+            QTimer::singleShot(0, qApp, &QCoreApplication::quit);
+        }
+        return;
+    }
+
+    m_aiCurrentRun = m_aiPlan.runs.at(m_aiRunIndex);
+    m_aiCurrentRunDir = QDir(m_aiBatchDir).filePath(m_aiCurrentRun.id);
+    QDir().mkpath(m_aiCurrentRunDir);
+    AiRunManager::setLogFile(QDir(m_aiCurrentRunDir).filePath("run.log"));
+
+    qDebug() << "[AI RUN] run begin:"
+             << "index=" << (m_aiRunIndex + 1)
+             << "of" << m_aiPlan.runs.size()
+             << "id=" << m_aiCurrentRun.id
+             << "case=" << m_aiCurrentRun.caseId
+             << "runDir=" << m_aiCurrentRunDir;
+
+    AiRunManager::writeJsonFile(QDir(m_aiCurrentRunDir).filePath("run_request.json"),
+                                AiRunManager::runItemToJson(m_aiCurrentRun));
+
+    if (!applyAiRunItem(m_aiCurrentRun)) {
+        finishCurrentAiRun(false, QString(), "failed to apply run item");
+        return;
+    }
+
+    QTimer::singleShot(0, this, &dicomviewer_3d::slot_computeRealVTA);
+}
+
+void dicomviewer_3d::finishCurrentAiRun(bool success,
+                                        const QString& resultPath,
+                                        const QString& reason)
+{
+    if (!m_aiPlanActive && !m_aiManualManagedRun) {
+        return;
+    }
+
+    const QString runDir = m_aiCurrentRunDir.isEmpty() ? m_aiBatchDir : m_aiCurrentRunDir;
+    QJsonObject status;
+    status["success"] = success;
+    status["reason"] = reason;
+    status["resultPath"] = resultPath;
+    status["finishedAt"] = QDateTime::currentDateTime().toString(Qt::ISODate);
+    status["runDir"] = runDir;
+    AiRunManager::writeJsonFile(QDir(runDir).filePath("run_status.json"), status);
+
+    qDebug() << "[AI RUN] run end:"
+             << "success=" << success
+             << "reason=" << reason
+             << "resultPath=" << resultPath
+             << "runDir=" << runDir;
+
+    const bool continuePlan = m_aiPlanActive;
+    m_aiManualManagedRun = false;
+    AiRunManager::closeLogFile();
+
+    if (continuePlan) {
+        QTimer::singleShot(0, this, &dicomviewer_3d::startNextAiPlanRun);
+    }
+}
+
+QJsonObject dicomviewer_3d::buildCurrentRunConfigJson(const QString& caseId,
+                                                      const dbs_fem::DBSSimSpec& spec,
+                                                      const QString& meshPath,
+                                                      const QString& resultPath,
+                                                      bool exportFEMOutputs) const
+{
+    QJsonObject obj;
+    obj["case"] = caseId;
+    obj["meshPath"] = meshPath;
+    obj["resultPath"] = resultPath;
+    obj["exportFEMOutputs"] = exportFEMOutputs;
+    obj["createdAt"] = QDateTime::currentDateTime().toString(Qt::ISODate);
+
+    QJsonArray target;
+    QJsonArray entry;
+    for (int i = 0; i < 3; ++i) {
+        target.append(spec.target[i]);
+        entry.append(spec.entry[i]);
+    }
+    obj["target"] = target;
+    obj["entry"] = entry;
+
+    QJsonArray polarities;
+    for (int i = 0; i < 4; ++i) {
+        polarities.append(spec.contactPolarity[i]);
+    }
+    obj["contactPolarity"] = polarities;
+
+    obj["leadType"] = spec.leadType;
+    obj["depthOffset"] = spec.depthOffset;
+    obj["numContacts"] = spec.numContacts;
+    obj["leadRadius"] = spec.leadRadius;
+    obj["contactLength"] = spec.contactLength;
+    obj["contactSpacing"] = spec.contactSpacing;
+    obj["amplitude"] = spec.amplitude;
+    obj["pulseWidth"] = spec.pulseWidth;
+    obj["isVoltageControl"] = spec.isVoltageControl;
+    obj["sigmaBrain"] = spec.sigmaBrain;
+    obj["useEncapsulationLayer"] = spec.useEncapsulationLayer;
+    obj["sigmaEncapsulation"] = spec.sigmaEncapsulation;
+    obj["encapsulationThickness"] = spec.encapsulationThickness;
+    obj["useNucleiBackfill"] = spec.useNucleiBackfill;
+    obj["sigmaNuclei"] = spec.sigmaNuclei;
+    return obj;
+}
+
+void dicomviewer_3d::startFemSolverFromMeshPath(const dbs_fem::DBSSimSpec& spec,
+                                                const QString& phaseFPresetId,
+                                                const QString& resultPath,
+                                                bool exportFEMOutputs,
+                                                const QString& meshPath)
+{
+    qDebug() << "[AI RUN] solver-only FEM begin:"
+             << "case=" << phaseFPresetId
+             << "meshPath=" << meshPath
+             << "resultPath=" << (exportFEMOutputs ? resultPath : QString("<export disabled>"));
+
+    auto* simWorker = new DBSSimWorker();
+    simWorker->setSpec(spec);
+    simWorker->setMeshPath(meshPath);
+
+    auto* simThread = new QThread(this);
+    simWorker->moveToThread(simThread);
+
+    connect(simThread, &QThread::started, simWorker, &DBSSimWorker::process);
+    connect(simWorker, &DBSSimWorker::progressUpdated, this, [this](int pct, const QString& msg) {
+        qDebug() << "[VTA FEM]" << pct << "%" << msg;
+    });
+    connect(simWorker, &DBSSimWorker::errorOccurred, this, [this](const QString& err) {
+        if (!m_aiPlanActive) {
+            QMessageBox::warning(this, "VTA 求解失败", err);
+        }
+        qDebug() << "[Phase F] ================= FEM run end: solver error =================";
+        finishCurrentAiRun(false, QString(), QString("solver-only error: %1").arg(err));
+    });
+    connect(simWorker, &DBSSimWorker::finished,
+            this, [this, phaseFPresetId, resultPath, exportFEMOutputs](vtkSmartPointer<vtkUnstructuredGrid> result) {
+        if (!result || result->GetNumberOfCells() == 0) {
+            qDebug() << "[Phase F] ================= FEM run end: empty solver-only result =================";
+            finishCurrentAiRun(false, resultPath, "empty solver-only FEM result");
+            return;
+        }
+
+        bool resultSaveOk = true;
+        if (exportFEMOutputs) {
+            if (writePhaseFResult(result, resultPath)) {
+                qDebug() << "[Phase F] FEM VTU saved:" << phaseFPresetId << resultPath;
+            } else {
+                qWarning() << "[Phase F] Failed to save FEM VTU:" << phaseFPresetId << resultPath;
+                resultSaveOk = false;
+            }
+        } else {
+            qDebug() << "[Phase F] FEM VTU export disabled:" << phaseFPresetId;
+        }
+
+        qDebug() << "[Phase F] ================= FEM run end: solver-only success =================";
+        finishCurrentAiRun(resultSaveOk, resultPath,
+                           resultSaveOk ? "success" : "result export failed");
+    });
+
+    connect(simWorker, &DBSSimWorker::finished, simThread, &QThread::quit);
+    connect(simWorker, &DBSSimWorker::errorOccurred, simThread, &QThread::quit);
+    connect(simThread, &QThread::finished, simWorker, &QObject::deleteLater);
+    connect(simThread, &QThread::finished, simThread, &QObject::deleteLater);
+
+    simThread->start();
+}
+
 void dicomviewer_3d::slot_applyPhaseFPreset(int presetIndex)
 {
     if (!m_trajManager || !m_trajManager->m_dbsLead) {
@@ -4344,8 +4816,8 @@ void dicomviewer_3d::slot_applyPhaseFPreset(int presetIndex)
     }
 
     int polarities[4] = {0, 0, -1, 0};
-    double target[3] = {167.114, 235.788, 124.18};
-    double entry[3] = {167.114, 235.788, 204.18};
+    double target[3] = {173.47, 237.42, 128.00};
+    double entry[3] = {128.08, 193.89, 201.00};
     double amplitude = 3.0;
     int pulseWidth = 60;
     int frequency = 130;
@@ -4369,12 +4841,6 @@ void dicomviewer_3d::slot_applyPhaseFPreset(int presetIndex)
         m_phaseFPresetId = "VideoDemo";
         polarities[1] = -1;
         polarities[2] = 0;
-        target[0] = 174.47;
-        target[1] = 238.15;
-        target[2] = 129.00;
-        entry[0] = 167.00;
-        entry[1] = 191.00;
-        entry[2] = 82.00;
         amplitude = 4.0;
         pulseWidth = 80;
         showVTA = false;
@@ -4430,17 +4896,26 @@ void dicomviewer_3d::slot_applyPhaseFPreset(int presetIndex)
 // ============================================================
 void dicomviewer_3d::slot_computeRealVTA()
 {
+    auto warnOrFail = [this](const QString& title, const QString& message) {
+        qWarning() << "[VTA]" << title << message;
+        if (m_aiPlanActive) {
+            finishCurrentAiRun(false, QString(), message);
+        } else {
+            QMessageBox::warning(this, title, message);
+        }
+    };
+
     // 前置检查
     if (!vtkImage) {
-        QMessageBox::warning(this, "VTA 计算", "请先加载脑部影像");
+        warnOrFail("VTA 计算", "请先加载脑部影像");
         return;
     }
     if (!m_trajManager || !m_trajManager->hasTarget || !m_trajManager->hasEntry) {
-        QMessageBox::warning(this, "VTA 计算", "请先设置靶点和入针点");
+        warnOrFail("VTA 计算", "请先设置靶点和入针点");
         return;
     }
     if (!m_trajManager->m_dbsLead) {
-        QMessageBox::warning(this, "VTA 计算", "请先创建电极模型");
+        warnOrFail("VTA 计算", "请先创建电极模型");
         return;
     }
 
@@ -4451,7 +4926,7 @@ void dicomviewer_3d::slot_computeRealVTA()
             hasCathode = true;
     }
     if (!hasCathode) {
-        QMessageBox::warning(this, "VTA 计算", "请至少设置一个阴极触点");
+        warnOrFail("VTA 计算", "请至少设置一个阴极触点");
         return;
     }
 
@@ -4481,20 +4956,62 @@ void dicomviewer_3d::slot_computeRealVTA()
     spec.useEncapsulationLayer = m_phaseFUseEncapsulation;
     spec.sigmaEncapsulation = m_phaseFSigmaEncapsulation;
     spec.encapsulationThickness = m_phaseFEncapsulationThickness;
+    spec.useNucleiBackfill = m_aiPlanActive
+        ? m_aiCurrentRun.nucleiBackfill
+        : (m_leadSimulator && m_leadSimulator->isNucleiBackfillEnabled());
+    spec.sigmaNuclei = 0.333;
+    spec.logNucleiBackfill = true;
 
     if (spec.amplitude < 0.01) {
-        QMessageBox::warning(this, "VTA 计算", "请先设置刺激幅度 (amplitude > 0)");
+        warnOrFail("VTA 计算", "请先设置刺激幅度 (amplitude > 0)");
         return;
     }
 
-    QString meshPath = QDir::tempPath() + "/dbs_fem_mesh.mesh";
     QString phaseFPresetId = m_phaseFPresetId;
-    QString resultPath = phaseFResultPath(phaseFPresetId);
+    const bool useExistingMesh = m_aiPlanActive && m_aiCurrentRun.hasInputMesh;
+    const bool manualManagedOutput = !m_aiPlanActive
+        && m_leadSimulator
+        && m_leadSimulator->isAiManagedOutputEnabled();
+    const bool managedOutput = m_aiPlanActive || manualManagedOutput;
+
+    if (manualManagedOutput) {
+        m_aiManualManagedRun = true;
+        m_aiCurrentRun = AiRunItem();
+        m_aiCurrentRun.caseId = phaseFPresetId;
+        m_aiCurrentRun.id = QString("manual_%1_%2")
+            .arg(AiRunManager::safeToken(phaseFPresetId, "Manual"),
+                 AiRunManager::timestamp());
+        m_aiCurrentRun.nucleiBackfill = spec.useNucleiBackfill;
+        m_aiCurrentRun.exportVtu = true;
+        m_aiCurrentRunDir = QDir(AiRunManager::defaultOutputRoot()).filePath(m_aiCurrentRun.id);
+        QDir().mkpath(m_aiCurrentRunDir);
+        AiRunManager::setLogFile(QDir(m_aiCurrentRunDir).filePath("run.log"));
+        AiRunManager::writeJsonFile(QDir(m_aiCurrentRunDir).filePath("run_request.json"),
+                                    AiRunManager::runItemToJson(m_aiCurrentRun));
+    }
+
+    QString meshPath = useExistingMesh
+        ? m_aiCurrentRun.inputMesh
+        : (managedOutput
+            ? QDir(m_aiCurrentRunDir).filePath("mesh.mesh")
+            : QDir::tempPath() + "/dbs_fem_mesh.mesh");
+    bool exportFEMOutputs = m_aiPlanActive
+        ? m_aiCurrentRun.exportVtu
+        : (manualManagedOutput || (m_leadSimulator && m_leadSimulator->isFEMOutputExportEnabled()));
+    QString resultPath = exportFEMOutputs
+        ? (managedOutput ? QDir(m_aiCurrentRunDir).filePath("result.vtu") : phaseFResultPath(phaseFPresetId))
+        : QString();
+    m_aiCurrentResultPath = resultPath;
+
+    if (managedOutput) {
+        AiRunManager::writeJsonFile(QDir(m_aiCurrentRunDir).filePath("run_config.json"),
+                                    buildCurrentRunConfigJson(phaseFPresetId, spec, meshPath, resultPath, exportFEMOutputs));
+    }
 
     qRegisterMetaType<vtkSmartPointer<vtkUnstructuredGrid>>("vtkSmartPointer<vtkUnstructuredGrid>");
     qDebug() << "[Phase F] ================= FEM run begin =================";
     qDebug() << "[Phase F] case=" << phaseFPresetId
-             << "resultPath=" << resultPath;
+             << "resultPath=" << (exportFEMOutputs ? resultPath : QString("<export disabled>"));
     qDebug() << "[Phase F] target=" << spec.target[0] << spec.target[1] << spec.target[2]
              << "entry=" << spec.entry[0] << spec.entry[1] << spec.entry[2];
     qDebug() << "[Phase F] leadType=" << spec.leadType
@@ -4505,8 +5022,15 @@ void dicomviewer_3d::slot_computeRealVTA()
     qDebug() << "[Phase F] material sigmaBrain=" << spec.sigmaBrain << "S/m"
              << "useEncapsulation=" << spec.useEncapsulationLayer
              << "encapsulationThickness=" << spec.encapsulationThickness << "mm"
-             << "sigmaEncapsulation=" << spec.sigmaEncapsulation << "S/m";
+             << "sigmaEncapsulation=" << spec.sigmaEncapsulation << "S/m"
+             << "useNucleiBackfill=" << spec.useNucleiBackfill
+             << "sigmaNuclei=" << spec.sigmaNuclei << "S/m";
     qDebug() << "[VTA] 启动 FEM 计算流水线...";
+
+    if (useExistingMesh) {
+        startFemSolverFromMeshPath(spec, phaseFPresetId, resultPath, exportFEMOutputs, meshPath);
+        return;
+    }
 
     // ---- Step 1: 网格化 (在后台线程) ----
     auto* meshWorker = new DBSMeshWorker();
@@ -4523,12 +5047,15 @@ void dicomviewer_3d::slot_computeRealVTA()
         qDebug() << "[VTA Mesh]" << pct << "%" << msg;
     });
     connect(meshWorker, &DBSMeshWorker::errorOccurred, this, [this](const QString& err) {
-        QMessageBox::warning(this, "VTA 网格化失败", err);
+        if (!m_aiPlanActive) {
+            QMessageBox::warning(this, "VTA 网格化失败", err);
+        }
         qDebug() << "[Phase F] ================= FEM run end: mesh error =================";
+        finishCurrentAiRun(false, QString(), QString("mesh error: %1").arg(err));
     });
 
     // 网格化完成后启动求解
-    connect(meshWorker, &DBSMeshWorker::finished, this, [this, spec, phaseFPresetId, resultPath](const QString& path) {
+    connect(meshWorker, &DBSMeshWorker::finished, this, [this, spec, phaseFPresetId, resultPath, exportFEMOutputs](const QString& path) {
         qDebug() << "[VTA] 网格化完成:" << path;
         qDebug() << "[VTA-Debug] 即将创建 DBSSimWorker...";
 
@@ -4547,25 +5074,37 @@ void dicomviewer_3d::slot_computeRealVTA()
             qDebug() << "[VTA FEM]" << pct << "%" << msg;
         });
         connect(simWorker, &DBSSimWorker::errorOccurred, this, [this](const QString& err) {
-            QMessageBox::warning(this, "VTA 求解失败", err);
+            if (!m_aiPlanActive) {
+                QMessageBox::warning(this, "VTA 求解失败", err);
+            }
             qDebug() << "[Phase F] ================= FEM run end: solver error =================";
+            finishCurrentAiRun(false, QString(), QString("solver error: %1").arg(err));
         });
 
         // 求解完成 → 提取 VTA 等值面
         connect(simWorker, &DBSSimWorker::finished,
-                this, [this, spec, phaseFPresetId, resultPath](vtkSmartPointer<vtkUnstructuredGrid> result) {
+                this, [this, spec, phaseFPresetId, resultPath, exportFEMOutputs](vtkSmartPointer<vtkUnstructuredGrid> result) {
             qDebug() << "[VTA] FEM 求解完成，提取等值面...";
 
             if (!result || result->GetNumberOfCells() == 0) {
-                QMessageBox::warning(this, "VTA", "FEM 结果为空");
+                if (!m_aiPlanActive) {
+                    QMessageBox::warning(this, "VTA", "FEM 结果为空");
+                }
                 qDebug() << "[Phase F] ================= FEM run end: empty result =================";
+                finishCurrentAiRun(false, resultPath, "empty FEM result");
                 return;
             }
 
-            if (writePhaseFResult(result, resultPath)) {
-                qDebug() << "[Phase F] FEM VTU saved:" << phaseFPresetId << resultPath;
+            bool resultSaveOk = true;
+            if (exportFEMOutputs) {
+                if (writePhaseFResult(result, resultPath)) {
+                    qDebug() << "[Phase F] FEM VTU saved:" << phaseFPresetId << resultPath;
+                } else {
+                    qWarning() << "[Phase F] Failed to save FEM VTU:" << phaseFPresetId << resultPath;
+                    resultSaveOk = false;
+                }
             } else {
-                qWarning() << "[Phase F] Failed to save FEM VTU:" << phaseFPresetId << resultPath;
+                qDebug() << "[Phase F] FEM VTU export disabled:" << phaseFPresetId;
             }
 
             // CellData → PointData
@@ -4736,8 +5275,11 @@ void dicomviewer_3d::slot_computeRealVTA()
             }
 
             if (vtaPoly->GetNumberOfPoints() == 0) {
-                QMessageBox::information(this, "VTA", "在当前阈值下未检测到激活区域");
+                if (!m_aiPlanActive) {
+                    QMessageBox::information(this, "VTA", "在当前阈值下未检测到激活区域");
+                }
                 qDebug() << "[Phase F] ================= FEM run end: empty VTA =================";
+                finishCurrentAiRun(false, resultPath, "empty VTA");
                 return;
             }
 
@@ -4747,9 +5289,13 @@ void dicomviewer_3d::slot_computeRealVTA()
                 m_trajManager->m_dbsLead->setShowVTA(true);
                 refreshAllViews();
                 calculateVTAIntersection();
-                QMessageBox::information(this, "VTA", "真实 VTA 计算完成！");
+                if (!m_aiPlanActive) {
+                    QMessageBox::information(this, "VTA", "真实 VTA 计算完成！");
+                }
             }
             qDebug() << "[Phase F] ================= FEM run end: success =================";
+            finishCurrentAiRun(resultSaveOk, resultPath,
+                               resultSaveOk ? "success" : "result export failed");
         });
 
         connect(simWorker, &DBSSimWorker::finished, simThread, &QThread::quit);

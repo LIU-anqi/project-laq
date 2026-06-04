@@ -1,0 +1,314 @@
+{
+  "off": {
+    "path": "E:\\LQ\\Code_Files\\VS_Code\\read\\out\\ai_runs\\phase_g_step1_f1_f4_20260604_103818\\005_F3_baseline\\run.log",
+    "phaseG": {
+      "enabled": false,
+      "disabled": true
+    },
+    "backfill": {},
+    "conformingTriangleLabels": {
+      "-1": 23918,
+      "50": 1294,
+      "101": 272,
+      "102": 270,
+      "103": 272,
+      "104": 270
+    },
+    "femTriangleLabels": {
+      "-1": 23918,
+      "50": 1294,
+      "101": 272,
+      "102": 270,
+      "103": 272,
+      "104": 270
+    },
+    "femTetLabels": {
+      "10": 262627,
+      "50": 2622,
+      "101": 493,
+      "102": 503,
+      "103": 505,
+      "104": 482
+    },
+    "phaseGTetLabels": {},
+    "brainShare": {
+      "0": {
+        "all": 138,
+        "shared": 118,
+        "noBrain": 20,
+        "brainFacingRatio": 0.855
+      },
+      "1": {
+        "all": 137,
+        "shared": 117,
+        "noBrain": 20,
+        "brainFacingRatio": 0.854
+      },
+      "2": {
+        "all": 138,
+        "shared": 118,
+        "noBrain": 20,
+        "brainFacingRatio": 0.855
+      },
+      "3": {
+        "all": 137,
+        "shared": 117,
+        "noBrain": 20,
+        "brainFacingRatio": 0.854
+      }
+    },
+    "effectiveContact": {
+      "0": {
+        "effective": 0,
+        "total": 138,
+        "effectiveRatio": 0.0
+      },
+      "1": {
+        "effective": 0,
+        "total": 137,
+        "effectiveRatio": 0.0
+      },
+      "2": {
+        "effective": 118,
+        "total": 138,
+        "effectiveRatio": 1.0
+      },
+      "3": {
+        "effective": 0,
+        "total": 137,
+        "effectiveRatio": 0.0
+      }
+    },
+    "floatingPhi": {
+      "0": {
+        "nodes": 118,
+        "span": 0.0
+      },
+      "1": {
+        "nodes": 117,
+        "span": 0.0
+      },
+      "3": {
+        "nodes": 117,
+        "span": 0.0
+      }
+    },
+    "summary": {
+      "selectedContact": 2,
+      "effectiveRatio": 1.0,
+      "brainFacingRatio": 0.855072,
+      "contactFluxMA": {
+        "0": 1.50726e-15,
+        "1": 4.79868e-15,
+        "2": -3.62941,
+        "3": 7.67648e-15
+      }
+    },
+    "warnings": []
+  },
+  "on": {
+    "path": "E:\\LQ\\Code_Files\\VS_Code\\read\\out\\ai_runs\\phase_g_step1_f1_f4_20260604_103818\\006_F3_nuclei_on\\run.log",
+    "phaseG": {
+      "enabled": true,
+      "disabled": false
+    },
+    "backfill": {
+      "candidates": 262627,
+      "relabeled": 28696,
+      "ratio": 0.109265,
+      "outOfExtent": 0,
+      "nonNucleiSamples": 233931
+    },
+    "conformingTriangleLabels": {
+      "-1": 23918,
+      "50": 1294,
+      "101": 272,
+      "102": 270,
+      "103": 272,
+      "104": 270
+    },
+    "femTriangleLabels": {
+      "-1": 23918,
+      "50": 1294,
+      "101": 272,
+      "102": 270,
+      "103": 272,
+      "104": 270
+    },
+    "femTetLabels": {
+      "1": 563,
+      "2": 25999,
+      "3": 416,
+      "4": 526,
+      "5": 963,
+      "6": 229,
+      "10": 233931,
+      "50": 2622,
+      "101": 493,
+      "102": 503,
+      "103": 505,
+      "104": 482
+    },
+    "phaseGTetLabels": {
+      "1": 563,
+      "2": 25999,
+      "3": 416,
+      "4": 526,
+      "5": 963,
+      "6": 229,
+      "10": 233931,
+      "50": 2622,
+      "101": 493,
+      "102": 503,
+      "103": 505,
+      "104": 482
+    },
+    "brainShare": {
+      "0": {
+        "all": 138,
+        "shared": 118,
+        "noBrain": 20,
+        "brainFacingRatio": 0.855
+      },
+      "1": {
+        "all": 137,
+        "shared": 117,
+        "noBrain": 20,
+        "brainFacingRatio": 0.854
+      },
+      "2": {
+        "all": 138,
+        "shared": 118,
+        "noBrain": 20,
+        "brainFacingRatio": 0.855
+      },
+      "3": {
+        "all": 137,
+        "shared": 117,
+        "noBrain": 20,
+        "brainFacingRatio": 0.854
+      }
+    },
+    "effectiveContact": {
+      "0": {
+        "effective": 0,
+        "total": 138,
+        "effectiveRatio": 0.0
+      },
+      "1": {
+        "effective": 0,
+        "total": 137,
+        "effectiveRatio": 0.0
+      },
+      "2": {
+        "effective": 118,
+        "total": 138,
+        "effectiveRatio": 1.0
+      },
+      "3": {
+        "effective": 0,
+        "total": 137,
+        "effectiveRatio": 0.0
+      }
+    },
+    "floatingPhi": {
+      "0": {
+        "nodes": 118,
+        "span": 0.0
+      },
+      "1": {
+        "nodes": 117,
+        "span": 0.0
+      },
+      "3": {
+        "nodes": 117,
+        "span": 0.0
+      }
+    },
+    "summary": {
+      "selectedContact": 2,
+      "effectiveRatio": 1.0,
+      "brainFacingRatio": 0.855072,
+      "contactFluxMA": {
+        "0": 2.73917e-14,
+        "1": 2.07627e-14,
+        "2": -7.86439,
+        "3": -7.44717e-15
+      }
+    },
+    "warnings": []
+  },
+  "checks": [
+    {
+      "name": "off disabled",
+      "ok": true,
+      "detail": "nuclei-off log should say disabled"
+    },
+    {
+      "name": "on enabled",
+      "ok": true,
+      "detail": "nuclei-on log should say enabled"
+    },
+    {
+      "name": "on relabeled > 0",
+      "ok": true,
+      "detail": "{'candidates': 262627, 'relabeled': 28696, 'ratio': 0.109265, 'outOfExtent': 0, 'nonNucleiSamples': 233931}"
+    },
+    {
+      "name": "on outOfExtent == 0",
+      "ok": true,
+      "detail": "{'candidates': 262627, 'relabeled': 28696, 'ratio': 0.109265, 'outOfExtent': 0, 'nonNucleiSamples': 233931}"
+    },
+    {
+      "name": "triangle labels unchanged",
+      "ok": true,
+      "detail": "off={-1: 23918, 50: 1294, 101: 272, 102: 270, 103: 272, 104: 270}, on={-1: 23918, 50: 1294, 101: 272, 102: 270, 103: 272, 104: 270}"
+    },
+    {
+      "name": "triangle labels allowed",
+      "ok": true,
+      "detail": "on tri labels=[-1, 50, 101, 102, 103, 104]"
+    },
+    {
+      "name": "off has no nuclei tet labels",
+      "ok": true,
+      "detail": "off tet labels=[10, 50, 101, 102, 103, 104]"
+    },
+    {
+      "name": "on has nuclei tet labels",
+      "ok": true,
+      "detail": "on tet labels={1: 563, 2: 25999, 3: 416, 4: 526, 5: 963, 6: 229, 10: 233931, 50: 2622, 101: 493, 102: 503, 103: 505, 104: 482}"
+    },
+    {
+      "name": "non-nuclei tets preserved",
+      "ok": true,
+      "detail": "off={10: 262627, 50: 2622, 101: 493, 102: 503, 103: 505, 104: 482}, on={1: 563, 2: 25999, 3: 416, 4: 526, 5: 963, 6: 229, 10: 233931, 50: 2622, 101: 493, 102: 503, 103: 505, 104: 482}"
+    },
+    {
+      "name": "brain tet accounting",
+      "ok": true,
+      "detail": "off brain=262627, on brain=233931, nuclei=28696"
+    },
+    {
+      "name": "selected effectiveRatio stable",
+      "ok": true,
+      "detail": "off=1.0, on=1.0"
+    },
+    {
+      "name": "selected brainFacingRatio stable",
+      "ok": true,
+      "detail": "off=0.855072, on=0.855072"
+    },
+    {
+      "name": "inactive contact flux near zero",
+      "ok": true,
+      "detail": "C0=2.73917e-14, C1=2.07627e-14, C3=-7.44717e-15"
+    },
+    {
+      "name": "no unknown/fallback warnings",
+      "ok": true,
+      "detail": "off warnings=0, on warnings=0"
+    }
+  ],
+  "passed": true
+}

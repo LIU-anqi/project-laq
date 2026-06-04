@@ -1,0 +1,14 @@
+{
+  "planId": "phase_g_step3_f1_centroid",
+  "mainImage": "out/build/release/mni_t2_job1901422.nii.gz",
+  "labelImage": "out/build/release/mni_structures_job1901422.nii.gz",
+  "outputRoot": "out/ai_runs",
+  "runs": [
+    {
+      "id": "001_F1_nuclei_on",
+      "case": "F1",
+      "nucleiBackfill": true,
+      "exportVtu": true
+    }
+  ]
+}

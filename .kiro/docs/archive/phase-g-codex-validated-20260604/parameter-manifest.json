@@ -1,0 +1,117 @@
+{
+  "archiveId": "phase-g-codex-validated-20260604",
+  "archiveDate": "2026-06-04",
+  "projectRoot": "E:\\LQ\\Code_Files\\VS_Code\\read",
+  "purpose": "Phase G 核团材料回填实现与 Step 1-5 验证归档。归档只保存小型文档、参数、审计报告、AI plan、验证脚本和相关 patch，不复制整份 C++ 源代码、不复制大型 .vtu/.mesh 文件。",
+  "sourceControl": {
+    "branch": "main",
+    "headCommitAtArchiveTime": "7d8e55b29338e962607a432bf19e8a1757ff021b",
+    "workingTreeStatusFile": ".kiro/docs/archive/phase-g-codex-validated-20260604/git-status.txt",
+    "trackedCodePatch": ".kiro/docs/archive/phase-g-codex-validated-20260604/patches/phase_g_tracked_code_diff.patch",
+    "newAiRunHeaderPatch": ".kiro/docs/archive/phase-g-codex-validated-20260604/patches/phase_g_new_header_ai_run_manager.patch",
+    "newAiRunSourcePatch": ".kiro/docs/archive/phase-g-codex-validated-20260604/patches/phase_g_new_source_ai_run_manager.patch",
+    "note": "这不是 Git commit。若要长期冻结代码版本，建议后续确认后做一次 Git commit 或 tag。"
+  },
+  "build": {
+    "configuration": "Release",
+    "executable": "E:\\LQ\\Code_Files\\VS_Code\\read\\out\\build\\release\\read.exe",
+    "buildDirectory": "E:\\LQ\\Code_Files\\VS_Code\\read\\out\\build\\release",
+    "buildCommand": "cmd.exe /c 'call \"D:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\Tools\\VsDevCmd.bat\" -arch=x64 && \"D:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\IDE\\CommonExtensions\\Microsoft\\CMake\\CMake\\bin\\cmake.exe\" --build \"E:\\LQ\\Code_Files\\VS_Code\\read\\out\\build\\release\" --config Release'"
+  },
+  "inputImages": {
+    "mainImage": "E:\\LQ\\Code_Files\\VS_Code\\read\\out\\build\\release\\mni_t2_job1901422.nii.gz",
+    "labelImage": "E:\\LQ\\Code_Files\\VS_Code\\read\\out\\build\\release\\mni_structures_job1901422.nii.gz",
+    "labelMeaning": {
+      "1": "Left Red nucleus",
+      "2": "Left Substantia nigra",
+      "3": "Left Subtalamic nucleus",
+      "4": "Right Red nucleus",
+      "5": "Right Substantia nigra",
+      "6": "Right Subtalamic nucleus"
+    }
+  },
+  "standardCoordinatesWorld": {
+    "target": [173.47, 237.42, 128.0],
+    "entry": [128.08, 193.89, 201.0]
+  },
+  "femParameters": {
+    "amplitude": 3.0,
+    "isVoltageControl": true,
+    "selectedContact": 2,
+    "contactPolarity": [0, 0, -1, 0],
+    "pulseWidthUs": 60,
+    "leadType": 0,
+    "numContacts": 4,
+    "leadRadiusMm": 0.635,
+    "contactLengthMm": 1.5,
+    "contactSpacingMm": 0.5,
+    "depthOffsetMm": 0.0,
+    "sigmaBrainSPerM": 0.115,
+    "sigmaEncapsulationSPerM": 0.115,
+    "sigmaNucleiSPerM": 0.333,
+    "encapsulationThicknessMm": 0.2
+  },
+  "phaseGImplementationRule": {
+    "summary": "mesh 仍按 Phase F 流程生成；mesh 完成后只遍历 brain tet，也就是 label==10 的四面体；用 tet 中心点采样对齐后的原始核团 label image；采样命中 1..6 时把 tet label 改成对应核团 label。",
+    "importantBoundaryRule": "核团 label 不参与电极、包膜、ROI 边界的 surface label 判定；surface/BC 仍沿用 Phase F 已修好的逻辑。"
+  },
+  "aiPlans": {
+    "step1F1F4": ".kiro/docs/archive/phase-g-codex-validated-20260604/plans/phase_g_step1_f1_f4.json",
+    "step3Centroid": ".kiro/docs/archive/phase-g-codex-validated-20260604/plans/phase_g_step3_f1_centroid.json",
+    "step5SameMeshAB": ".kiro/docs/archive/phase-g-codex-validated-20260604/plans/phase_g_step5_same_mesh_ab.json"
+  },
+  "validationBatches": {
+    "step1Step2Step4": "E:\\LQ\\Code_Files\\VS_Code\\read\\out\\ai_runs\\phase_g_step1_f1_f4_20260604_103818",
+    "step3Centroid": "E:\\LQ\\Code_Files\\VS_Code\\read\\out\\ai_runs\\phase_g_step3_f1_centroid_20260604_105142",
+    "step5SameMeshAB": "E:\\LQ\\Code_Files\\VS_Code\\read\\out\\ai_runs\\phase_g_step5_same_mesh_ab_20260604_110613"
+  },
+  "keyResults": {
+    "step1F1F2F4NucleiCounts": {
+      "1": 551,
+      "2": 25704,
+      "3": 439,
+      "4": 495,
+      "5": 999,
+      "6": 234
+    },
+    "step1F3NucleiCounts": {
+      "1": 563,
+      "2": 25999,
+      "3": 416,
+      "4": 526,
+      "5": 963,
+      "6": 229
+    },
+    "step3CentroidAudit": {
+      "nucleiTotal": 28422,
+      "nucleiMatch": 28421,
+      "nucleiMatchRate": 0.9999648159876152,
+      "nucleiOutOfExtent": 0,
+      "label10NucleiSamples": 0,
+      "acceptedBoundaryNeighborMismatch": 1
+    },
+    "step4BCAudit": {
+      "F1": "passed",
+      "F2": "passed",
+      "F3": "passed",
+      "F4": "passed"
+    },
+    "step5SameMeshAB": {
+      "passed": true,
+      "points": 49272,
+      "cells": 274387,
+      "nucleiOnHighEVolumeMm3": 140.825615,
+      "homogeneousHighEVolumeMm3": 162.970073,
+      "highEVolumeDeltaNucleiMinusHomogeneousMm3": -22.144458,
+      "nucleiOnSelectedFluxMA": -6.050209951974,
+      "homogeneousSelectedFluxMA": -3.526202506215,
+      "selectedEffectiveRatioBoth": 1.0,
+      "selectedBrainFacingRatioBoth": 0.86013986
+    }
+  },
+  "manualUiBehaviorAtArchiveTime": {
+    "nucleiBackfillCheckbox": "默认不勾选；勾选后启用 Phase G 核团 sigma 分区。",
+    "saveFEMOutputsCheckbox": "默认不勾选；勾选后才保存 .vtu 等 FEM 输出文件。",
+    "aiManagedOutputCheckbox": "默认不勾选；手动运行时勾选会把日志、配置、mesh、可选 VTU 写入 out/ai_runs；命令行 AI plan 会自动托管输出。"
+  }
+}

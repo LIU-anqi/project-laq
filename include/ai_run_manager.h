@@ -1,0 +1,87 @@
+#ifndef AI_RUN_MANAGER_H
+#define AI_RUN_MANAGER_H
+#pragma execution_character_set("utf-8")
+
+#include <QString>
+#include <QVector>
+#include <QJsonObject>
+
+struct AiRunItem
+{
+    QString id;
+    QString caseId = "F1";
+    int presetIndex = -1;
+
+    bool nucleiBackfill = false;
+    bool exportVtu = true;
+    bool hasInputMesh = false;
+    QString inputMesh;
+
+    bool hasTarget = false;
+    double target[3] = {0.0, 0.0, 0.0};
+
+    bool hasEntry = false;
+    double entry[3] = {0.0, 0.0, 0.0};
+
+    bool hasPolarities = false;
+    int polarities[4] = {0, 0, 0, 0};
+
+    bool hasAmplitude = false;
+    double amplitude = 3.0;
+
+    bool hasPulseWidth = false;
+    int pulseWidth = 60;
+
+    bool hasFrequency = false;
+    int frequency = 130;
+
+    bool hasLeadType = false;
+    int leadType = 0;
+
+    bool hasDepthOffset = false;
+    double depthOffset = 0.0;
+
+    bool hasUseEncapsulation = false;
+    bool useEncapsulation = true;
+
+    bool hasSigmaEncapsulation = false;
+    double sigmaEncapsulation = 0.115;
+
+    bool hasEncapsulationThickness = false;
+    double encapsulationThickness = 0.2;
+
+    QJsonObject raw;
+};
+
+struct AiRunPlan
+{
+    QString planId = "ai_plan";
+    QString mainImage;
+    QString labelImage;
+    QString outputRoot;
+    QVector<AiRunItem> runs;
+    QJsonObject raw;
+};
+
+class AiRunManager
+{
+public:
+    static void installMessageHandler();
+    static void setLogFile(const QString& path);
+    static void closeLogFile();
+
+    static QString projectRoot();
+    static QString resolvePath(const QString& path, const QString& baseDir = QString());
+    static QString defaultOutputRoot();
+    static QString safeToken(QString text, const QString& fallback = "run");
+    static QString timestamp();
+
+    static bool loadPlan(const QString& path, AiRunPlan* plan, QString* error = nullptr);
+    static bool writeJsonFile(const QString& path, const QJsonObject& obj, QString* error = nullptr);
+    static bool copyFile(const QString& from, const QString& to, QString* error = nullptr);
+
+    static int presetIndexForCase(const QString& caseId);
+    static QJsonObject runItemToJson(const AiRunItem& item);
+};
+
+#endif // AI_RUN_MANAGER_H

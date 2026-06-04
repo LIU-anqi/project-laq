@@ -1374,31 +1374,78 @@ bool DBSMeshWorker::runConformingMeshing(vtkSmartPointer<vtkImageData> labelMap)
     qDebug() << "[Conforming] 给表面三角形打标签 (按 facet 两侧 subdomain)...";
 
     auto inferSurfaceLabel = [](int a, int b) -> int {
+        // ============================================================
+        // 表面三角面打标签：按 facet 两侧 tet 的 subdomain (label) 推断。
+        // ------------------------------------------------------------
+        // 历史教训：这段函数曾经是手动列举 (a, b) → label 的多个分支，
+        // 凡是没列到的 pair 都 fallback 到 return -1，被求解器误当 ROI
+        // 外边界接地为 V=0V。Phase F 4x VTA gap 主因就是漏写了
+        // (encap, contact) 这一对。
+        //
+        // 现在改成"优先级规则"：每个 label 给一个固定优先级，共享面取
+        // 优先级**高**的那一侧作为面 label。这样**任意 pair 一次性覆盖**，
+        // 未来加新 label（核团 backfill / 灰白质细分 / fiber tract）只
+        // 需要在 priority() 里加一行，不再需要在 if 里挨个枚举。
+        //
+        // 优先级设计原则（高 → 低）：
+        //   1. contact (101..104)  — 电极金属表面，强 Dirichlet 锚点
+        //   2. insulator (50)      — 电极绝缘体，物理屏障
+        //   3. encap (51)          — 0.2mm 包膜薄壳
+        //   4. nuclei (1..6)       — 核团（Phase G 才会出现的 label）
+        //   5. brain tissue (10)   — 普通脑组织
+        //   0. unknown / background — 触发 fallback warning
+        //
+        // 物理直觉：当某 cell pair 跨越层级时（比如 contact-encap、
+        // encap-brain），界面应该归到"更结构化、更接近电极、BC 锚点
+        // 更强"那一侧。这跟原版的几条手写规则结果完全一致：
+        //   - (brain 10, encap 51)  → encap (51)             ✓ 跟原规则一致
+        //   - (insul 50, encap 51)  → insulator (50)         ✓
+        //   - (brain 10, insul 50)  → insulator (50)         ✓
+        //   - (insul 50, contact)   → contact                ✓
+        //   - (encap 51, contact)   → contact                ✓ Phase F 修复
+        //   - (brain 10, contact)   → contact                ✓ no-encap case
+        // 同时**自动覆盖**所有 nuclei 相关 pair（Phase G 启用后才会有）：
+        //   - (nuclei 1..6, brain 10)    → nuclei            ★ 等 Phase G 触发
+        //   - (nuclei 1..6, encap 51)    → encap             ★ 等 Phase G + 电极穿核团触发
+        //   - (nuclei 1..6, insul 50)    → insulator         ★ 极少触发，但理论上也对
+        //   - (nuclei 1..6, contact)     → contact           ★ 等 Phase G + no-encap + 穿核团
+        //   - (nuclei 1..6, nuclei 1..6) → 选 a 或 b（同优先级）★ 不同核团接触
+        //
+        // 维护提醒：Phase G centroid backfill 启用后，FEM 日志里会第一
+        // 次出现 (10, 1..6)、(51, 1..6) 等 surface label，**不应该**冒
+        // 出 "Unknown surface pair" warning。如果冒了，说明这里的优先
+        // 级规则还有遗漏。
+        // ============================================================
         if (a > b) std::swap(a, b);
-        if (a == 0 || b == 0) return -1;
-        if (a == dbs_fem::LABEL_BRAIN_TISSUE &&
-            b == dbs_fem::LABEL_ENCAPSULATION) {
-            return dbs_fem::LABEL_ENCAPSULATION;
+
+        // (0, X)：跟背景 (label 0) 接触一定是 ROI 外边界
+        if (a == 0) return -1;
+
+        auto priority = [](int lab) -> int {
+            // 越靠近电极/BC 锚点优先级越高
+            if (lab >= dbs_fem::LABEL_CONTACT_BASE &&
+                lab <  dbs_fem::LABEL_CONTACT_BASE + 4)  return 5;  // contact 101..104
+            if (lab == dbs_fem::LABEL_ELECTRODE_BODY)    return 4;  // insulator 50
+            if (lab == dbs_fem::LABEL_ENCAPSULATION)     return 3;  // encap 51
+            if (lab >= 1 && lab <= 6)                    return 2;  // nuclei 1..6
+            if (lab == dbs_fem::LABEL_BRAIN_TISSUE)      return 1;  // brain 10
+            return 0;  // unknown — 没 priority，触发 fallback
+        };
+
+        int pa = priority(a);
+        int pb = priority(b);
+
+        if (pa == 0 || pb == 0) {
+            qWarning() << "[Conforming] Unknown surface pair ("
+                       << a << "," << b
+                       << "), labeled -1 (treated as outer boundary). "
+                       << "If you just enabled Phase G nuclei backfill or added a new label, "
+                       << "extend priority() in inferSurfaceLabel().";
+            return -1;
         }
-        if (a == dbs_fem::LABEL_ELECTRODE_BODY &&
-            b == dbs_fem::LABEL_ENCAPSULATION) {
-            return dbs_fem::LABEL_ELECTRODE_BODY;
-        }
-        if (a == dbs_fem::LABEL_BRAIN_TISSUE &&
-            b == dbs_fem::LABEL_ELECTRODE_BODY) {
-            return dbs_fem::LABEL_ELECTRODE_BODY;
-        }
-        for (int i = 0; i < 4; ++i) {
-            int contactLabel = dbs_fem::LABEL_CONTACT_BASE + i;
-            if ((a == dbs_fem::LABEL_ELECTRODE_BODY && b == contactLabel) ||
-                (a == dbs_fem::LABEL_ENCAPSULATION && b == contactLabel) ||
-                (a == dbs_fem::LABEL_BRAIN_TISSUE && b == contactLabel)) {
-                return contactLabel;
-            }
-        }
-        qWarning() << "[Conforming] Unknown surface pair (" << a << "," << b
-                   << "), labeled -1 (treated as outer boundary)";
-        return -1;
+
+        // 共享面取优先级高的那一侧（同优先级时取 a，无所谓哪边）
+        return (pa >= pb) ? a : b;
     };
 
     struct Tri { size_t v[3]; int label; };
@@ -1440,6 +1487,114 @@ bool DBSMeshWorker::runConformingMeshing(vtkSmartPointer<vtkImageData> labelMap)
     qDebug() << "[Conforming] triangle label 计数 (-1 = ROI/脑壳):";
     for (auto const& kv : triLabelCounts) {
         qDebug() << "[Conforming]   label" << kv.first << ":" << kv.second;
+    }
+
+    // ----------------------------------------------------------
+    // Step C-7.5: Phase G nuclei centroid backfill
+    //   This is intentionally after inferSurfaceLabel(), so nuclei
+    //   labels affect only tetra material conductivity, not contact BC
+    //   surface labels validated in Phase F.
+    // ----------------------------------------------------------
+    auto backfillNucleiLabels = [this](std::vector<Tet>& meshTets,
+                                       const std::vector<std::array<double, 3>>& meshVerts) {
+        if (!m_labelImage) {
+            qWarning() << "[Phase G] nuclei backfill requested but label image is null; skipping";
+            return;
+        }
+
+        double origin[3] = {0.0, 0.0, 0.0};
+        double spacing[3] = {1.0, 1.0, 1.0};
+        int extent[6] = {0, -1, 0, -1, 0, -1};
+        m_labelImage->GetOrigin(origin);
+        m_labelImage->GetSpacing(spacing);
+        m_labelImage->GetExtent(extent);
+
+        if (std::abs(spacing[0]) < 1e-12 ||
+            std::abs(spacing[1]) < 1e-12 ||
+            std::abs(spacing[2]) < 1e-12) {
+            qWarning() << "[Phase G] label image spacing is invalid; skipping nuclei backfill";
+            return;
+        }
+
+        std::array<size_t, 7> nucleiCounts = {{0, 0, 0, 0, 0, 0, 0}};
+        size_t candidates = 0;
+        size_t relabeled = 0;
+        size_t outOfExtent = 0;
+        size_t nonNucleiSamples = 0;
+
+        for (auto& tet : meshTets) {
+            if (tet.label != dbs_fem::LABEL_BRAIN_TISSUE) {
+                continue;
+            }
+            candidates++;
+
+            double c[3] = {0.0, 0.0, 0.0};
+            for (int k = 0; k < 4; ++k) {
+                const auto& p = meshVerts[tet.v[k]];
+                c[0] += p[0];
+                c[1] += p[1];
+                c[2] += p[2];
+            }
+            c[0] *= 0.25;
+            c[1] *= 0.25;
+            c[2] *= 0.25;
+
+            int idx[3] = {
+                static_cast<int>(std::round((c[0] - origin[0]) / spacing[0])),
+                static_cast<int>(std::round((c[1] - origin[1]) / spacing[1])),
+                static_cast<int>(std::round((c[2] - origin[2]) / spacing[2]))
+            };
+
+            if (idx[0] < extent[0] || idx[0] > extent[1] ||
+                idx[1] < extent[2] || idx[1] > extent[3] ||
+                idx[2] < extent[4] || idx[2] > extent[5]) {
+                outOfExtent++;
+                continue;
+            }
+
+            double sample = m_labelImage->GetScalarComponentAsDouble(
+                idx[0], idx[1], idx[2], 0);
+            int nucLabel = static_cast<int>(std::round(sample));
+            if (nucLabel >= 1 && nucLabel <= 6) {
+                tet.label = nucLabel;
+                nucleiCounts[static_cast<size_t>(nucLabel)]++;
+                relabeled++;
+            } else {
+                nonNucleiSamples++;
+            }
+        }
+
+        if (m_spec.logNucleiBackfill) {
+            double ratio = candidates > 0
+                ? static_cast<double>(relabeled) / static_cast<double>(candidates)
+                : 0.0;
+            qDebug() << "[Phase G] nuclei backfill:"
+                     << "candidates(brain tet)=" << candidates
+                     << "relabeled=" << relabeled
+                     << "ratio=" << QString::number(ratio, 'f', 6)
+                     << "outOfExtent=" << outOfExtent
+                     << "nonNucleiSamples=" << nonNucleiSamples;
+            for (int lab = 1; lab <= 6; ++lab) {
+                qDebug() << "[Phase G]   label" << lab
+                         << ":" << nucleiCounts[static_cast<size_t>(lab)] << "tets";
+            }
+        }
+
+        std::map<int, size_t> finalLabelCounts;
+        for (const auto& tet : meshTets) {
+            finalLabelCounts[tet.label]++;
+        }
+        qDebug() << "[Phase G] tet label count after nuclei backfill:";
+        for (auto const& kv : finalLabelCounts) {
+            qDebug() << "[Phase G]   sub" << kv.first << ":" << kv.second;
+        }
+    };
+
+    if (m_spec.useNucleiBackfill) {
+        qDebug() << "[Phase G] nuclei centroid backfill enabled";
+        backfillNucleiLabels(tets, verts);
+    } else {
+        qDebug() << "[Phase G] nuclei centroid backfill disabled (Phase F baseline mode)";
     }
 
     // ----------------------------------------------------------

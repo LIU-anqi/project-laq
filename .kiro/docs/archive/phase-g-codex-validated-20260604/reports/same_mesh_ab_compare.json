@@ -1,0 +1,216 @@
+{
+  "passed": true,
+  "a_vtu": "out\\ai_runs\\phase_g_step5_same_mesh_ab_20260604_110613\\001_same_mesh_nuclei_on\\result.vtu",
+  "b_vtu": "out\\ai_runs\\phase_g_step5_same_mesh_ab_20260604_110613\\002_same_mesh_homogeneous\\result.vtu",
+  "threshold": 0.2,
+  "checks": {
+    "same_point_count": true,
+    "same_cell_count": true,
+    "same_point_coordinates_bytes": true,
+    "same_connectivity_bytes": true,
+    "nuclei_on_has_nuclei": true,
+    "homogeneous_has_no_nuclei": true,
+    "only_nuclei_to_brain_labels_changed": true,
+    "brain_count_accounting": true,
+    "preserved_non_nuclei_labels": true,
+    "diagnostics_stable_for_bc_geometry": true,
+    "selected_effective_ratio_is_one": true,
+    "selected_flux_faces_not_missing": true,
+    "field_difference_present": true
+  },
+  "stable_diagnostic_checks": {
+    "selectedContact": true,
+    "selectedVoltage": true,
+    "amplitude": true,
+    "pulseWidth": true,
+    "electrodeSurfaceNodesNoBrain": true,
+    "hollowedSurfaceNodes": true,
+    "contactBrainFacingRatio": true,
+    "contactEffectiveRatio": true,
+    "contactFluxFaces": true,
+    "contactFluxMissingFaces": true
+  },
+  "material": {
+    "changed_label_transitions": {
+      "1->10": 551,
+      "2->10": 25704,
+      "3->10": 439,
+      "4->10": 495,
+      "5->10": 999,
+      "6->10": 234
+    },
+    "unexpected_label_transitions": {},
+    "a_label_counts": {
+      "1": 551,
+      "2": 25704,
+      "3": 439,
+      "4": 495,
+      "5": 999,
+      "6": 234,
+      "10": 233084,
+      "50": 2727,
+      "51": 8130,
+      "101": 518,
+      "102": 487,
+      "103": 503,
+      "104": 516
+    },
+    "b_label_counts": {
+      "10": 261506,
+      "50": 2727,
+      "51": 8130,
+      "101": 518,
+      "102": 487,
+      "103": 503,
+      "104": 516
+    },
+    "a_nuclei_cells": 28422,
+    "a_nuclei_volume_mm3": 2633.024088
+  },
+  "geometry": {
+    "a_points": 49272,
+    "b_points": 49272,
+    "a_cells": 274387,
+    "b_cells": 274387,
+    "point_type": "Float32",
+    "connectivity_type": "Int64"
+  },
+  "field_difference": {
+    "E_mag_Vmm": {
+      "count": 274387,
+      "nonzero_gt_1e-12": 266235,
+      "mean_abs": 0.017762540955,
+      "p50_abs": 0.002949807085,
+      "p95_abs": 0.04283966076,
+      "p99_abs": 0.335626511915,
+      "max_abs": 4.087155508323,
+      "mean_signed_a_minus_b": 0.001768794935
+    },
+    "Potential_V": {
+      "count": 49272,
+      "nonzero_gt_1e-12": 36977,
+      "mean_abs": 0.037190675802,
+      "p50_abs": 0.010992270968,
+      "p95_abs": 0.142302584296,
+      "p99_abs": 0.210776998222,
+      "max_abs": 0.422313465857,
+      "mean_signed_a_minus_b": -0.034411246394
+    }
+  },
+  "physical_summary": {
+    "a_high_E_volume_mm3": 140.825615,
+    "b_high_E_volume_mm3": 162.970073,
+    "high_E_volume_delta_mm3": -22.144458,
+    "high_E_volume_relative_delta_a_minus_b": -0.135880518,
+    "a_activeThresholdVolume_diag": 140.825631725,
+    "b_activeThresholdVolume_diag": 162.970062801,
+    "a_activeThresholdCells_diag": 14466,
+    "b_activeThresholdCells_diag": 15555,
+    "a_selected_flux_mA": -6.050209951974,
+    "b_selected_flux_mA": -3.526202506215,
+    "selected_flux_delta_mA": -2.524007445759,
+    "selected_flux_relative_delta_a_minus_b": 0.7157863
+  },
+  "diagnostics": {
+    "a": {
+      "selectedContact": 2,
+      "selectedVoltage": -3.0,
+      "amplitude": 3.0,
+      "pulseWidth": 60,
+      "activeThresholdVolume": 140.825631725,
+      "activeThresholdCells": 14466,
+      "p95": 0.210751469,
+      "p99": 1.030552865,
+      "p999": 4.991361263,
+      "robustMaxE": 6.553748506,
+      "electrodeSurfaceNodesNoBrain": 82,
+      "hollowedSurfaceNodes": 62,
+      "contactBrainFacingRatio": [
+        0.857142857,
+        0.858156028,
+        0.86013986,
+        0.859060403
+      ],
+      "contactEffectiveRatio": [
+        0.0,
+        0.0,
+        1.0,
+        0.0
+      ],
+      "contactFluxMA": [
+        0.0,
+        -0.0,
+        -6.050209951974,
+        -0.0
+      ],
+      "contactFluxFaces": [
+        1150,
+        1081,
+        1100,
+        1161
+      ],
+      "contactFluxMissingFaces": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "contact": 2,
+      "brainFacingRatio": 0.86013986,
+      "effectiveRatio": 1.0,
+      "fluxMA": -6.050209951974,
+      "fluxFaces": 1100,
+      "fluxMissingFaces": 0
+    },
+    "b": {
+      "selectedContact": 2,
+      "selectedVoltage": -3.0,
+      "amplitude": 3.0,
+      "pulseWidth": 60,
+      "activeThresholdVolume": 162.970062801,
+      "activeThresholdCells": 15555,
+      "p95": 0.247187014,
+      "p99": 1.401467746,
+      "p999": 4.209146891,
+      "robustMaxE": 5.735105242,
+      "electrodeSurfaceNodesNoBrain": 82,
+      "hollowedSurfaceNodes": 62,
+      "contactBrainFacingRatio": [
+        0.857142857,
+        0.858156028,
+        0.86013986,
+        0.859060403
+      ],
+      "contactEffectiveRatio": [
+        0.0,
+        0.0,
+        1.0,
+        0.0
+      ],
+      "contactFluxMA": [
+        0.0,
+        -0.0,
+        -3.526202506215,
+        -0.0
+      ],
+      "contactFluxFaces": [
+        1150,
+        1081,
+        1100,
+        1161
+      ],
+      "contactFluxMissingFaces": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "contact": 2,
+      "brainFacingRatio": 0.86013986,
+      "effectiveRatio": 1.0,
+      "fluxMA": -3.526202506215,
+      "fluxFaces": 1100,
+      "fluxMissingFaces": 0
+    }
+  }
+}

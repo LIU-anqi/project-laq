@@ -118,6 +118,8 @@
 
 #include "trajectory_manager.h"
 #include "lead_simulator_widget.h"
+#include "ai_run_manager.h"
+#include "dbs_fem_types.h"
 
 
 // 【核心结构体】视图上下文
@@ -304,6 +306,8 @@ public:
     void translateMainLead(double offset[3]);
 
     void calculateVTAIntersection();
+
+    bool runAiPlanFile(const QString& planPath, bool autoExit);
 
     // AC-PC 标定模式枚举
     enum AcPcPickMode {
@@ -679,6 +683,32 @@ private:
     bool m_phaseFUseEncapsulation = true;
     double m_phaseFSigmaEncapsulation = 0.115;
     double m_phaseFEncapsulationThickness = 0.2;
+
+    // AI managed runs: command-line plans and optional manual managed output.
+    bool m_aiPlanActive = false;
+    bool m_aiAutoExit = false;
+    bool m_aiManualManagedRun = false;
+    AiRunPlan m_aiPlan;
+    int m_aiRunIndex = -1;
+    QString m_aiPlanPath;
+    QString m_aiBatchDir;
+    AiRunItem m_aiCurrentRun;
+    QString m_aiCurrentRunDir;
+    QString m_aiCurrentResultPath;
+
+    bool applyAiRunItem(const AiRunItem& item);
+    void startNextAiPlanRun();
+    void finishCurrentAiRun(bool success, const QString& resultPath, const QString& reason = QString());
+    void startFemSolverFromMeshPath(const dbs_fem::DBSSimSpec& spec,
+                                    const QString& phaseFPresetId,
+                                    const QString& resultPath,
+                                    bool exportFEMOutputs,
+                                    const QString& meshPath);
+    QJsonObject buildCurrentRunConfigJson(const QString& caseId,
+                                          const dbs_fem::DBSSimSpec& spec,
+                                          const QString& meshPath,
+                                          const QString& resultPath,
+                                          bool exportFEMOutputs) const;
 
     void toggleSimulator();
     void onSingleSliceViewChanged(int index);
